@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4a0 - Draft & Simulador de Campeonatos</title>
+    <style>
+        :root {
+            --bg-main: #0f172a; --bg-card: #1e293b; --pt-green: #10b981; --pt-red: #f43f5e; --pt-gold: #eab308;
+            --pitch-green: #047857; --pitch-lines: rgba(255, 255, 255, 0.35);
+            --text-dark: #f8fafc; --text-muted: #94a3b8; --border-color: #334155;
+            --color-gr: #f97316; --color-def: #3b82f6; --color-med: #10b981; --color-ata: #ef4444;
+        }
+        body.light-theme {
+            --bg-main: #e2e8f0; --bg-card: #ffffff; --text-dark: #0f172a; --text-muted: #475569;
+            --border-color: #cbd5e1; --pitch-green: #15803d; --pitch-lines: rgba(255, 255, 255, 0.5); --pt-gold: #d97706;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main); color: var(--text-dark); margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            justify-content: space-between; box-sizing: border-box; transition: 0.2s;
+        }
+        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 800; }
+        .theme-toggle-btn {
+            position: absolute; top: 15px; right: 15px; background: var(--bg-card);
+            border: 2px solid var(--border-color); color: inherit; padding: 8px 14px;
+            border-radius: 20px; cursor: pointer; font-weight: 800; font-size: 13px; z-index: 10;
+        }
+        #main-menu, #simulation-screen {
+            width: 100%; max-width: 700px; background: var(--bg-card); padding: 35px;
+            border-radius: 16px; border: 1px solid var(--border-color); margin-top: 40px;
+        }
+        #simulation-screen { display: none; max-width: 850px; }
+        #game-container { display: none; width: 100%; max-width: 1250px; grid-template-columns: 1fr; gap: 20px; margin-top: 40px; }
+        @media (min-width: 1024px) { #game-container { grid-template-columns: 1.1fr 0.9fr; } }
+        .panel { background: var(--bg-card); border-radius: 14px; padding: 20px; border: 1px solid var(--border-color); }
+        .team-title { font-size: 24px; font-weight: 900; margin: 10px 0; }
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; max-height: 460px; overflow-y: auto; margin-top: 15px; }
+        .player-card {
+            display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
+            background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; color: #ffffff;
+        }
+        body.light-theme .player-card { background: #1e293b; }
+        .player-card.selected-card { border-color: #eab308; background-color: #3f3f46; }
+        .player-card.disabled-card { opacity: 0.2; cursor: not-allowed; }
+        .card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; align-items: center; }
+        .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; font-size: 10px; font-weight: 900; }
+        .card-ovr { font-size: 16px; font-weight: 900; }
+        .stadium-wrapper { background: #0f172a; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .ad-boards { display: flex; justify-content: space-between; padding: 4px 10px; background: #020617; color: #64748b; font-size: 10px; font-weight: 800; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 6px; }
+        .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.015) 50%, transparent 50%); background-size: 100% 30px; border: 2px solid var(--pitch-lines); height: 500px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 15px 0; box-sizing: border-box; border-radius: 4px; }
+        .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--pitch-lines); transform: translateY(-50%); }
+        .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
+        .pitch-line-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; }
+        .pitch-player-node { width: 64px; height: 64px; background: #0f172a; border: 2px solid #475569; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2px; box-sizing: border-box; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .pitch-player-node .node-pos { font-size: 9px; font-weight: 900; margin-bottom: 1px; padding: 1px 4px; border-radius: 3px; color: #fff; }
+        .pitch-player-node .node-name { font-size: 9px; font-weight: 700; max-width: 58px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pitch-player-node .node-ovr { font-size: 11px; font-weight: 900; }
+        .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.45); border: 2px dashed #eab308; transform: scale(1.1); cursor: pointer; }
+        .pitch-player-node.node-filled { background: #0f172a; border: 2px solid var(--pt-green); }
+        .menu-subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; display: block; }
+        .selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .selector-card { background: rgba(15, 23, 42, 0.6); border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-muted); }
+        .selector-card.active-card { border-color: var(--pt-green); color: var(--text-dark); background: rgba(16, 185, 129, 0.15); }
+        .difficulty-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; text-align: center; }
+        .btn { padding: 16px 24px; font-size: 16px; border-radius: 8px; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-green { background: var(--pt-green); color: #0f172a; }
+        .btn-red { background: var(--pt-red); color: #fff; }
+        .btn-gold-action { background: var(--pt-gold); color: #0f172a; box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4); border: 2px solid rgba(255,255,255,0.2); }
+        .btn-large { width: 100%; display: block; }
+        .projection-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-top: 15px; text-align: center; color: #fff; }
+        body.light-theme .projection-card { background: rgba(15, 23, 42, 0.05); color: inherit; }
+        .odds-bar-container { margin: 12px 0; text-align: left; }
+        .odds-label { font-size: 12px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 4px;}
+        .odds-bar-bg { background: #1e293b; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
+        body.light-theme .odds-bar-bg { background: #cbd5e1; }
+        .odds-bar-fill { background: var(--pt-green); height: 100%; width: 0%; transition: width 1s; }
+        .match-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; color: #fff; }
+        body.light-theme .match-card { background: var(--bg-card); color: inherit; border-color: var(--border-color); }
+        .match-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 6px; }
+        body.light-theme .match-header { border-bottom-color: var(--border-color); }
+        .match-scorers { font-size: 12px; color: var(--text-muted); font-style: italic; }
+        .league-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; color: inherit; }
+        .league-table th { background: #0f172a; padding: 10px 8px; color: #94a3b8; }
+        body.light-theme .league-table th { background: #cbd5e1; color: #475569; }
+        .league-table td { padding: 9px 8px; border-bottom: 1px solid #1e293b; }
+        body.light-theme .league-table td { border-bottom-color: var(--border-color); }
+        .league-table tr.user-team-row { background: rgba(16, 185, 129, 0.25); font-weight: 700; }
+        .perfect-screen { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%) !important; border: 3px solid #eab308 !important; animation: pulse-gold 2s infinite alternate; }
+        @keyframes pulse-gold { from { box-shadow: 0 0 10px rgba(234,179,8,0.2); } to { box-shadow: 0 0 30px rgba(234,179,8,0.6); } }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle-btn" onclick="toggleInterfaceTheme()">☀️ / 🌙</button>
+
+    <div id="main-menu">
+        <h1>4a0 • LIGA PORTUGUESA</h1>
+        <div class="menu-subtitle">Alcança a Época Perfeita: 34 vitórias seguidas na Liga Portugal (102 Pts) e conquista invicta de todas as Taças nacionais e europeias.</div>
+        <div style="text-align:center; font-size:12px; margin-bottom:20px; font-weight:700; color:var(--pt-green);" id="ui-local-record-label">🏆 Recorde Pessoal Registado: 0 Pontos na Liga</div>
+
+        <div class="setup-group"><span class="section-label">Formação</span><div class="selector-grid" id="group-formations"><div class="selector-card active-card" onclick="setForm('4-3-3', this)">4-3-3</div><div class="selector-card" onclick="setForm('4-4-2', this)">4-4-2</div><div class="selector-card" onclick="setForm('3-5-2', this)">3-5-2</div><div class="selector-card" onclick="setForm('4-2-3-1', this)">4-2-3-1</div><div class="selector-card" onclick="setForm('4-5-1', this)">4-5-1</div><div class="selector-card" onclick="setForm('3-4-3', this)">3-4-3</div><div class="selector-card" onclick="setForm('5-3-2', this)">5-3-2</div><div class="selector-card" onclick="setForm('5-4-1', this)">5-4-1</div><div class="selector-card" onclick="setForm('4-1-2-1-2', this)">4-1-2-1-2</div><div class="selector-card" onclick="setForm('3-4-1-2', this)">3-4-1-2</div><div class="selector-card" onclick="setForm('4-3-1-2', this)">4-3-1-2</div><div class="selector-card" onclick="setForm('5-2-3', this)">5-2-3</div></div></div>
+        <div class="setup-group"><span class="section-label">Dificuldade</span><div class="selector-grid" id="group-difficulties" style="grid-template-columns: repeat(3, 1fr);"><div class="selector-card active-card" onclick="setDiff('easy', this)">Fácil</div><div class="selector-card" onclick="setDiff('medium', this)">Médio</div><div class="selector-card" onclick="setDiff('hard', this)">Difícil</div></div></div>
+        <div class="difficulty-desc" id="lbl-diff-desc">Permite equipas All-Time e concede 3 baralhamentos livres.</div>
+        <button class="btn btn-gold-action btn-large" onclick="startDraftSession()">START DRAFT</button>
+    </div>
+
+    <div id="game-container">
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;"><span id="round-title" style="font-weight: 800; color: var(--text-muted);">Ronda 1/11</span><span id="reroll-counter" style="font-size:12px; font-weight:700; color:var(--pt-red); display:none;">Baralhamentos: 3</span></div>
+            <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"><button id="btn-trigger-draw" class="btn btn-green btn-large" onclick="drawNextTeamSquad()">Sortear Equipa</button><button id="btn-trigger-reroll" class="btn btn-red btn-large" style="display:none;" onclick="executeReroll()">Baralhar Opções</button></div>
+            <div id="draw-squad-zone" style="display: none;"><div id="display-team-name" class="team-title">Equipa</div><div id="display-players-grid" class="players-grid"></div></div>
+            <div id="projection-zone" class="projection-card" style="display: none;"><h3>Previsão das Casas de Apostas</h3><div style="font-size:32px; font-weight:900; color:var(--pt-green); margin:10px 0;" id="proj-place">1º Lugar</div><div style="font-size:12px; color:var(--text-muted); font-weight:700; margin-bottom:15px;">Pontos Esperados na Liga: <span id="proj-points" style="color:#fff">85</span> pts</div><div class="odds-bar-container"><div class="odds-label"><span>Campanha de 102 Pts Perfeitos</span><span id="txt-odd-1">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-1" class="odds-bar-fill"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça de Portugal</span><span id="txt-odd-2">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-2" class="odds-bar-fill" style="background:#3b82f6;"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça da Liga</span><span id="txt-odd-3">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-3" class="odds-bar-fill" style="background:#a855f7;"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Liga dos Campeões</span><span id="txt-odd-4">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-4" class="odds-bar-fill" style="background:#eab308;"></div></div></div></div>
+        </div>
+        <div class="panel">
+            <div class="stadium-wrapper"><div class="ad-boards"><span>★ 4A0.COM</span><span>LIGA PORTUGUESA</span><span>TAÇA DE PORTUGAL ★</span></div><div class="football-pitch" id="live-pitch"><div class="pitch-center-circle"></div></div></div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:12px; text-align:center; font-size:11px; font-weight:700;"><div>DEF: <span id="ovr-def" style="color:#3b82f6; font-weight:900;">0</span></div><div>MED: <span id="ovr-med" style="color:var(--pt-green); font-weight:900;">0</span></div><div>ATA: <span id="ovr-ata" style="color:var(--pt-red); font-weight:900;">0</span></div><div style="background:var(--pt-green); color:#0f172a; padding:2px 6px; border-radius:4px; font-weight:900;">GER: <span id="ovr-tot">0</span></div></div>
+            <button id="btn-simulate-season" class="btn btn-green btn-large" style="margin-top:15px; display:none;" onclick="runSeasonSimulation()">Simular Temporada</button>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================
+        // ABRE O TEU FICHEIRO 'DADOS.JS', COPIA O SEU CONTEÚDO INTEGRAL 
+        // (DESDE const database = [ ATÉ AO ]; DO FIM) E COLA-O DIRETAMENTE AQUI:
+        // ===================================================================
+        
+        // [COLA AQUI OS TEUS DADOS]
+
+        // ===================================================================
+
+        let selectedFormation = "4-3-3", selectedDifficulty = "easy", currentPitchFormation = [], lockedNamesRegistry = [], sessionTeamsHistory = [], playerAwaitingPlacement = null, activeRoundCount = 0, remainingRerolls = 3;
+
+        const tacticPitchRows = {
+            "4-3-3": { A: ["EXE", "PL", "EXD"], M: ["MC", "MC", "MC"], D: ["DE", "DC", "DC", "DD"] },
+            "4-4-2": { A: ["PL", "PL"], M: ["ME", "MC", "MC", "MD"], D: ["DE", "DC", "DC", "DD"] },
+            "3-5-2": { A: ["PL", "PL"], M: ["ME", "MC", "MDC", "MC", "MD"], D: ["DC", "DC", "DC"] },
+            "4-2-3-1": { A: ["EXE", "PL", "EXD"], M: ["MDC", "MCO", "MDC"], D: ["DE", "DC", "DC", "DD"] },
+            "4-5-1": { A: ["PL"], M: ["ME", "MC", "MCO", "MC", "MD"], D: ["DE", "DC", "DC", "DD"] },
+            "3-4-3": { A: ["EXE", "PL", "EXD"], M: ["ME", "MC", "MC", "MD"], D: ["DC", "DC", "DC"] },
+            "5-3-2": { A: ["PL", "PL"], M: ["MC", "MC", "MC"], D: ["DE", "DC", "DC", "DC", "DD"] },
+            "5-4-1": { A: ["PL"], M: ["ME", "MC", "MC", "MD"], D: ["DE", "DC", "DC", "DC", "DD"] },
+            "4-1-2-1-2": { A: ["PL", "PL"], M: ["ME", "MCO", "MDC", "MD"], D: ["DE", "DC", "DC", "DD"] },
+            "3-4-1-2": { A: ["PL", "PL"], M: ["ME", "MC", "MCO", "MC", "MD"], D: ["DC", "DC", "DC"] },
+            "4-3-1-2": { A: ["PL", "PL"], M: ["MC", "MCO", "MDC", "MC"], D: ["DE", "DC", "DC", "DD"] },
+            "5-2-3": { A: ["EXE", "PL", "EXD"], M: ["MC", "MC"], D: ["DE", "DC", "DC", "DC", "DD"] }
+        };
+
+        // Filtros de posições blindados (Futebol Real): Laterais e trincos nas suas devidas posições
+        const roleCompatibility = {
+            "GR": ["GR"], "DC": ["DC"], "DD": ["DD", "MD"], "DE": ["DE", "ME"],
+            "MDC": ["MDC", "MC"], "MC": ["MC", "MDC"], "MCO": ["MCO", "MC"],
+            "MD": ["MD", "EXD", "DD"], "ME": ["ME", "EXE", "DE"],
+            "EXD": ["EXD", "MD"], "EXE": ["EXE", "ME"], "PL": ["PL"]
+        };
+
+        const colorMap = { "GR": "var(--color-gr)", "DD": "var(--color-def)", "DE": "var(--color-def)", "DC": "var(--color-def)", "MC": "var(--color-med)", "MDC": "var(--color-med)", "MCO": "var(--color-med)", "MD": "var(--color-med)", "ME": "var(--color-med)", "EXD": "var(--color-ata)", "EXE": "var(--color-ata)", "PL": "var(--color-ata)" };
+
+        window.onload = function() {
+            let record = localStorage.getItem("4a0_pts_record") || 0;
+            document.getElementById("ui-local-record-label").innerText = `🏆 Recorde Pessoal Registado: ${record} Pontos na Liga`;
+        };
+
+        function toggleInterfaceTheme() { document.body.classList.toggle("light-theme"); }
+        function setForm(f, element) { document.querySelectorAll("#group-formations .selector-card").forEach(c => c.classList.remove("active-card")); element.classList.add("active-card"); selectedFormation = f; }
+        function setDiff(d, element) { document.querySelectorAll("#group-difficulties .selector-card").forEach(c => c.classList.remove("active-card")); element.classList.add("active-card"); selectedDifficulty = d; document.getElementById("lbl-diff-desc").innerText = d === "easy" ? "Permite equipas All-Time e concede 3 baralhamentos livres." : d === "medium" ? "Futebol real competitivo. Sem baralhamentos disponíveis." : "Modo Cego! Sem baralhamentos e com os Overalls ocultos no sorteio."; }
+
+        function startDraftSession() {
+            if (typeof database === 'undefined' || database.length === 0) { alert("Erro: Cola a base de dados no local indicado."); return; }
+            const rowsSetup = tacticPitchRows[selectedFormation]; currentPitchFormation = [];
+            currentPitchFormation.push({ id: "GR-G-0", sector: "G", role: "GR", name: null, ovr: null });
+            ["D", "M", "A"].forEach(key => {
+                rowsSetup[key].forEach((pos, idx) => { currentPitchFormation.push({ id: `${pos}-${key}-${idx}`, sector: key, role: pos, name: null, ovr: null }); });
+            });
+            lockedNamesRegistry = []; sessionTeamsHistory = []; activeRoundCount = 0; playerAwaitingPlacement = null;
+            remainingRerolls = (selectedDifficulty === "easy") ? 3 : 0;
+            const uiReroll = document.getElementById("reroll-counter");
+            if (remainingRerolls > 0) { uiReroll.innerText = `Baralhamentos: ${remainingRerolls}`; uiReroll.style.display = "inline"; } else { uiReroll.style.display = "none"; }
+            document.getElementById("main-menu").style.display = "none"; document.getElementById("game-container").style.display = "grid";
+            buildVisualPitch(); updateRoundLabels(); calculateTeamOveralls();
+        }
+
+        function buildVisualPitch() {
+            const pitch = document.getElementById("live-pitch"); pitch.innerHTML = '<div class="pitch-center-circle"></div>';
+            ["A", "M", "D", "G"].forEach(sec => {
+                const nodes = currentPitchFormation.filter(n => n.sector === sec); const rowDiv = document.createElement("div"); rowDiv.className = "pitch-line-row";
+                nodes.forEach(node => {
+                    const nodeDiv = document.createElement("div"); nodeDiv.className = "pitch-player-node"; nodeDiv.id = `node-ui-${node.id}`;
+                    const color = colorMap[node.role] || "#475569";
+                    if (node.name) {
+                        nodeDiv.classList.add("node-filled"); nodeDiv.style.borderTop = `4px solid ${color}`;
+                        nodeDiv.innerHTML = `<div class="node-pos" style="background:${color}; color:#0f172a;">${node.role}</div><div class="node-name" style="color:#ffffff;">${node.name.split(" ")[0]}</div><div class="node-ovr" style="color:${color}; font-weight:900;">${node.ovr}</div>`;
+                    } else {
+                        nodeDiv.innerHTML = `<div class="node-pos" style="background:#334155; color:#fff;">${node.role}</div><div class="node-ovr" style="color:rgba(255,255,255,0.6); font-size:12px;">+</div>`;
+                    }
+                    rowDiv.appendChild(nodeDiv);
+                });
+                pitch.appendChild(rowDiv);
+            });
+        }
+
+        function drawNextTeamSquad() {
+            playerAwaitingPlacement = null; clearPitchNodeHighlights();
+            // BLOQUEIO TOTAL E ABSOLUTO DE EQUIPAS INTERNACIONAIS NO DRAFT
+            let pool = database.filter(e => e.isChampionsOnly !== true && e.isChampionsOnly !== "true");
+            if (selectedDifficulty !== "easy") pool = pool.filter(e => !e.id.includes("alltime"));
+            let available = pool.filter(e => !sessionTeamsHistory.includes(e.id));
+            if (available.length === 0) { sessionTeamsHistory = []; available = pool; }
+            const team = available[Math.floor(Math.random() * available.length)]; sessionTeamsHistory.push(team.id);
+            document.getElementById("display-team-name").innerText = team.nomeEquipa;
+            const grid = document.getElementById("display-players-grid"); grid.innerHTML = "";
+            team.jogadores.forEach(p => {
+                const card = document.createElement("div"); card.className = "player-card";
+                const pName = p.nome || p.name; const isLocked = lockedNamesRegistry.includes(pName);
+                let compatibleSlot = false;
+                p.posicoes.forEach(pos => {
+                    currentPitchFormation.forEach(node => {
+                        let allowed = roleCompatibility[node.role] || [node.role];
+                        if (allowed.includes(pos) && !node.name) compatibleSlot = true;
+                    });
+                });
+                if (isLocked || !compatibleSlot) card.classList.add("disabled-card");
+                else card.onclick = () => bindSelectedPlayerCard(p, card);
+                const color = colorMap[p.posicoes[0]] || "#334155";
+                card.innerHTML = `<div class="card-top"><span class="card-pos" style="background:${color}">${p.posicoes.join("/")}</span><span class="card-ovr">${selectedDifficulty === "hard" ? "?" : p.ovr}</span></div><div style="font-weight:700; font-size:13px; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${pName}</div>`;
+                grid.appendChild(card);
+            });
+            document.getElementById("draw-squad-zone").style.display = "block"; document.getElementById("btn-trigger-draw").style.display = "none";
+            if (remainingRerolls > 0) document.getElementById("btn-trigger-reroll").style.display = "block";
+        }
+
+        function executeReroll() {
+            if (remainingRerolls <= 0) return; remainingRerolls--;
+            document.getElementById("reroll-counter").innerText = `Baralhamentos: ${remainingRerolls}`;
+            document.getElementById("btn-trigger-reroll").style.display = "none"; drawNextTeamSquad();
+        }
+
+        function bindSelectedPlayerCard(player, cardEl) {
+            document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected-card'));
+            clearPitchNodeHighlights(); playerAwaitingPlacement = player; cardEl.classList.add('selected-card');
+            player.posicoes.forEach(pos => {
+                currentPitchFormation.forEach(node => {
+                    let allowed = roleCompatibility[node.role] || [node.role];
+                    if (allowed.includes(pos) && !node.name) {
+                        const targetUi = document.getElementById(`node-ui-${node.id}`);
+                        if (targetUi) { targetUi.classList.add("node-active"); targetUi.onclick = () => confirmPlayerPlacement(node); }
+                    }
+                });
+            });
+        }
+
+        function confirmPlayerPlacement(targetNode) {
+            if (!playerAwaitingPlacement) return;
+            const pName = playerAwaitingPlacement.nome || playerAwaitingPlacement.name;
+            targetNode.name = pName; targetNode.ovr = playerAwaitingPlacement.ovr;
+            lockedNamesRegistry.push(pName); activeRoundCount++; playerAwaitingPlacement = null;
+            document.getElementById("draw-squad-zone").style.display = "none"; document.getElementById("btn-trigger-reroll").style.display = "none";
+            buildVisualPitch(); calculateTeamOveralls();
+            if (activeRoundCount < 11) { updateRoundLabels(); document.getElementById("btn-trigger-draw").style.display = "block"; }
+            else { document.getElementById("round-title").innerText = "Draft Completo!"; document.getElementById("btn-trigger-draw").style.display = "none"; document.getElementById("btn-simulate-season").style.display = "block"; triggerPreSeasonOddsDisplay(); }
+        }
+
+        function calculateTeamOveralls() {
+            const def = currentPitchFormation.filter(n => ["G", "D"].includes(n.sector) && n.name);
+            const med = currentPitchFormation.filter(n => n.sector === "M" && n.name);
+            const ata = currentPitchFormation.filter(n => n.sector === "A" && n.name);
+            const tot = currentPitchFormation.filter(n => n.name);
+            const aDef = def.length ? Math.round(def.reduce((s, n) => s + n.ovr, 0) / def.length) : 0;
+            const aMed = med.length ? Math.round(med.reduce((s, n) => s + n.ovr, 0) / med.length) : 0;
+            const aAta = ata.length ? Math.round(ata.reduce((s, n) => s + n.ovr, 0) / ata.length) : 0;
+            const aTot = tot.length ? Math.round(tot.reduce((s, n) => s + n.ovr, 0) / tot.length) : 0;
+            document.getElementById("ovr-def").innerText = aDef; document.getElementById("ovr-med").innerText = aMed; document.getElementById("ovr-ata").innerText = aAta; document.getElementById("ovr-tot").innerText = aTot;
+            return { def: aDef, med: aMed, ata: aAta, ger: aTot };
+        }
+
+        // Algoritmo de vitória baseado em limites de Overalls com margem de segurança de 2% (Garante o 1% contra o script garantido)
+        function evalCupStage(userStats, reqMed, reqSec) {
+            if (userStats.ger >= reqMed && userStats.def >= reqSec && userStats.med >= reqSec && userStats.ata >= reqSec) {
+                return Math.random() > 0.02; 
+            }
+            return Math.random() < 0.22;
+        }
+
+        function runSeasonSimulation() {
+            const scores = calculateTeamOveralls(); const localScorers = currentPitchFormation.map(n => n.name ? n.name.split(" ")[0] : "Jogador");
+            const clubTags = ["por_", "slb_", "scp_", "bel_", "boa_", "scb_", "vsc_", "cfb_", "sal_", "far_", "cam_", "bei_", "lei_", "set_", "aca_", "pac_", "ave_"];
+            let chosenLeagueClubs = [];
+            
+            // Escolhe exatamente 17 adversários nacionais únicos e sem duplicações
+            clubTags.forEach(tag => {
+                let variants = database.filter(e => e.id.startsWith(tag) && !e.id.includes("alltime"));
+                if (variants.length > 0) {
+                    variants.sort((a,b) => b.jogadores.reduce((s,n)=>s+n.ovr,0) - a.jogadores.reduce((s,n)=>s+n.ovr,0));
+                    chosenLeagueClubs.push(variants[0]);
+                }
+            });
+
+            const screen = document.getElementById("simulation-screen"); screen.style.display = "block";
+            document.getElementById("game-container").style.display = "none";
+            const timeline = document.getElementById("simulation-matches-timeline"); timeline.innerHTML = "";
+
+            // --- LIGA PORTUGUESA (18 EQUIPAS) ---
+            const secLiga = document.createElement("div"); secLiga.className = "timeline-section-title"; secLiga.innerText = "Liga Portugal - Classificação"; timeline.appendChild(secLiga);
+            let tableData = [{ id: "user_draft", name: "A Tua Equipa", ger: scores.ger, points: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, isUser: true }];
+            chosenLeagueClubs.forEach(c => {
+                let avg = Math.round(c.jogadores.reduce((s,n)=>s+n.ovr,0)/c.jogadores.length);
+                tableData.push({ id: c.id, name: c.nomeEquipa, ger: avg, points: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, isUser: false });
+            });
+
+            // Simula o campeonato verdadeiro se os limites forem atingidos
+            let meetsLiga = (scores.ger >= 85 && scores.def >= 82 && scores.med >= 82 && scores.ata >= 82);
+            if (meetsLiga && Math.random() > 0.02) {
+                tableData.forEach(t => { if(t.isUser) { t.points = 102; t.w = 34; t.gf = 92; t.ga = 12; } else { t.points = Math.floor(Math.random()*60)+20; t.w = Math.floor(t.points/3); t.d = t.points%3; t.l = 34-t.w-t.d; t.gf = Math.floor(Math.random()*40)+30; t.ga = Math.floor(Math.random()*30)+40; } });
+            } else {
+                for (let i = 0; i < tableData.length; i++) {
+                    for (let j = i + 1; j < tableData.length; j++) { determineLgPlacementGolos(tableData[i], tableData[j]); determineLgPlacementGolos(tableData[j], tableData[i]); }
+                }
+            }
+            tableData.sort((a, b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga));
+            let tableCard = document.createElement("div"); tableCard.className = "match-card";
+            let html = `<table class="league-table"><thead><tr><th>Pos</th><th>Equipa</th><th>P</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th></tr></thead><tbody>`;
+            tableData.forEach((r, idx) => { html += `<tr class="${r.isUser ? 'user-team-row' : ''}"><td>${idx + 1}º</td><td>${r.name}</td><td><b>${r.points}</b></td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td></tr>`; });
+            html += `</tbody></table>`; tableCard.innerHTML = html; timeline.appendChild(tableCard);
+
+            // --- TAÇA DA LIGA (QUARTOS, MEIA, FINAL) ---
+            const secTL = document.createElement("div"); secTL.className = "timeline-section-title"; secTL.innerText = "Taça da Liga"; timeline.appendChild(secTL);
+            let tl1 = evalCupStage(scores, 79, 77); appendDetailedMatchCard(timeline, "Quartos de Final", tableData[0], chosenLeagueClubs[0], tl1, false);
+            let tl2 = tl1 ? evalCupStage(scores, 79, 77) : false; if (tl1) appendDetailedMatchCard(timeline, "Meia-Final", tableData[0], chosenLeagueClubs[1], tl2, false);
+            let tl3 = tl2 ? evalCupStage(scores, 79, 77) : false; if (tl2) appendDetailedMatchCard(timeline, "Grande Final", tableData[0], chosenLeagueClubs[2], tl3, false);
+
+            // --- TAÇA DE PORTUGAL (32AVOS, 16AVOS, OITAVOS, QUARTOS, MEIAS DUAS MÃOS, FINAL) ---
+            const secTP = document.createElement("div"); secTP.className = "timeline-section-title"; secTP.innerText = "Taça de Portugal"; timeline.appendChild(secTP);
+            let tp1 = evalCupStage(scores, 82, 80); appendDetailedMatchCard(timeline, "32 avos de Final", tableData[0], chosenLeagueClubs[3], tp1, false);
+            let tp2 = tp1 ? evalCupStage(scores, 82, 80) : false; if (tp1) appendDetailedMatchCard(timeline, "16 avos de Final", tableData[0], chosenLeagueClubs[4], tp2, false);
+            let tp3 = tp2 ? evalCupStage(scores, 82, 80) : false; if (tp2) appendDetailedMatchCard(timeline, "8 avos de Final", tableData[0], chosenLeagueClubs[5], tp3, false);
+            let tp4 = tp3 ? evalCupStage(scores, 82, 80) : false; if (tp3) appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[6], tp4, false);
+            
+            let tp5 = tp4 ? evalCupStage(scores, 82, 80) : false;
+            if (tp4) { appendDetailedMatchCard(timeline, "Meia-Final - 1ª Mão", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(timeline, "Meia-Final - 2ª Mão", tableData[0], chosenLeagueClubs[0], tp5, true); }
+            let tp6 = tp5 ? evalCupStage(scores, 82, 80) : false; if (tp5) appendDetailedMatchCard(timeline, "Grande Final do Jamor", tableData[0], chosenLeagueClubs[1], tp6, false);
+
+            // --- CHAMPIONS LEAGUE (8 JOGOS LIGA, PLAYOFFS, OITAVOS, QUARTOS, MEIAS, FINAL) ---
+            const secUCL = document.createElement("div"); secUCL.className = "timeline-section-title"; secUCL.innerText = "Liga dos Campeões - Fase de Liga"; timeline.appendChild(secUCL);
+            const giants = database.filter(e => e.isChampionsOnly === true || e.isChampionsOnly === "true");
+            let uclPts = 0;
+            for (let m = 1; m <= 8; m++) {
+                let opp = giants[(m-1)%giants.length]; let winM = evalCupStage(scores, 88, 84);
+                if (winM) uclPts += 3; else uclPts += 1;
+                const mCard = document.createElement("div"); mCard.className = "match-card"; mCard.innerHTML = `<div class="match-header"><span>Jogo ${m} (${m<=4?'Casa':'Fora'})</span><span style="color:var(--pt-green)">${winM?'VITÓRIA':'EMPATE'} vs ${opp.nomeEquipa}</span></div>`; timeline.appendChild(mCard);
+            }
+            
+            const secUclPlayoffs = document.createElement("div"); secUclPlayoffs.className = "timeline-section-title"; secUclPlayoffs.innerText = "Liga dos Campeões - Fases Eliminatórias (Duas Mãos)"; timeline.appendChild(secUclPlayoffs);
+            let ch1 = evalCupStage(scores, 88, 84); appendDetailedMatchCard(timeline, "Playoffs - 1ª Mão", tableData[0], giants[0], ch1, true); appendDetailedMatchCard(timeline, "Playoffs - 2ª Mão", tableData[0], giants[0], ch1, true);
+            let ch2 = ch1 ? evalCupStage(scores, 88, 84) : false; if (ch1) { appendDetailedMatchCard(timeline, "Oitavos - 1ª Mão", tableData[0], giants[1], ch2, true); appendDetailedMatchCard(timeline, "Oitavos - 2ª Mão", tableData[0], giants[1], ch2, true); }
+            let ch3 = ch2 ? evalCupStage(scores, 88, 84) : false; if (ch2) { appendDetailedMatchCard(timeline, "Quartos - 1ª Mão", tableData[0], giants[2], ch3, true); appendDetailedMatchCard(timeline, "Quartos - 2ª Mão", tableData[0], giants[2], ch3, true); }
+            let ch4 = ch3 ? evalCupStage(scores, 88, 84) : false; if (ch3) { appendDetailedMatchCard(timeline, "Meias-Finais - 1ª Mão", tableData[0], giants[3], ch4, true); appendDetailedMatchCard(timeline, "Meias-Finais - 2ª Mão", tableData[0], giants[3], ch4, true); }
+            let ch5 = ch4 ? evalCupStage(scores, 88, 84) : false; if (ch4) appendDetailedMatchCard(timeline, "Grande Final Europeia", tableData[0], giants[0], ch5, false);
+
+            if (tableData[0].w === 34 && tl3 && tp6 && ch5) { screen.classList.add("perfect-screen"); const b = document.createElement("div"); b.style.cssText = "background:#eab308; color:#0f172a; padding:20px; border-radius:8px; font-weight:900; font-size:22px; text-align:center; margin-bottom:20px;"; b.innerText = "⭐ LENDA ABSOLUTA: ALCANÇASTE O 4a0 PERFEITO! 102 PONTOS E LIMPEZA TOTAL DE TROFÉUS ⭐"; timeline.insertBefore(b, timeline.firstChild); }
+        }
+
+        function determineLgPlacementGolos(teamA, teamB) {
+            const diff = teamA.ger - teamB.ger; const probA = 0.46 + (diff * 0.035); const rng = Math.random();
+            if (rng < probA) { teamA.points += 3; teamA.w++; teamB.l++; } else if (rng < probA + 0.22) { teamA.points += 1; teamB.points += 1; teamA.d++; teamB.d++; } else { teamB.points += 3; teamB.w++; teamA.l++; }
+        }
+        function clearPitchNodeHighlights() { currentPitchFormation.forEach(node => { const el = document.getElementById(`node-ui-${node.id}`); if (el) { el.classList.remove("node-active"); if (!node.name) el.onclick = null; } }); }
+        function updateRoundLabels() { document.getElementById("round-title").innerText = `Ronda ${activeRoundCount + 1} de 11`; }
+        function triggerPreSeasonOddsDisplay() { document.getElementById("projection-zone").style.display = "block"; }
+    </script>
+</body>
+</html>
