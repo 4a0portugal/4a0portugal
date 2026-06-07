@@ -17,6 +17,7 @@
             --pt-green: #10b981;
             --pt-red: #f43f5e;
             --pt-gold: #d97706;
+            --pt-amber: #f59e0b;
             --color-gr: #f97316;
             --color-def: #2563eb;
             --color-med: #059669;
@@ -29,53 +30,53 @@
             --bg-card: #1e293b;
             --text-dark: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #020617;
+            --border-color: #1e293b;
             --pitch-green: #047857;
             --pitch-lines: rgba(255, 255, 255, 0.35);
             --pt-gold: #eab308;
             --card-inline-bg: #0f172a;
-            --block-shadow: 6px 6px 0px #020617;
+            --block-shadow: 6px 6px 0px #090d16;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-main); color: var(--text-dark); margin: 0; padding: 25px;
+            background-color: var(--bg-main); color: var(--text-dark); margin: 0; padding: 30px;
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
             justify-content: space-between; box-sizing: border-box; transition: 0.2s;
         }
-        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 24px; }
+        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 28px; }
         .theme-toggle-btn {
-            position: absolute; top: 20px; right: 20px; background: var(--bg-card); border: 3px solid var(--border-color);
-            color: inherit; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 13px; z-index: 10;
+            position: absolute; top: 25px; right: 25px; background: var(--bg-card); border: 3px solid var(--border-color);
+            color: inherit; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 13px; z-index: 10;
         }
         #main-menu, #simulation-screen {
-            width: 100%; max-width: 760px; background: var(--bg-card); padding: 40px;
+            width: 100%; max-width: 780px; background: var(--bg-card); padding: 45px;
             border-radius: 12px; border: 3px solid var(--border-color); margin-top: 40px; box-shadow: var(--block-shadow);
         }
-        #simulation-screen { display: none; max-width: 880px; }
-        #game-container { display: none; width: 100%; max-width: 1300px; grid-template-columns: 1fr; gap: 30px; margin-top: 40px; }
+        #simulation-screen { display: none; max-width: 900px; }
+        #game-container { display: none; width: 100%; max-width: 1320px; grid-template-columns: 1fr; gap: 35px; margin-top: 40px; }
         @media (min-width: 1024px) { #game-container { grid-template-columns: 1.15fr 0.85fr; } }
-        .panel { background: var(--bg-card); border-radius: 12px; padding: 30px; border: 3px solid var(--border-color); box-shadow: var(--block-shadow); }
+        .panel { background: var(--bg-card); border-radius: 12px; padding: 35px; border: 3px solid var(--border-color); box-shadow: var(--block-shadow); }
         .db-stats-box {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-            background: var(--card-inline-bg); padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 3px solid var(--border-color);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            background: var(--card-inline-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 3px solid var(--border-color);
         }
         .stat-item { text-align: center; }
-        .stat-val { font-size: 26px; font-weight: 900; color: var(--text-dark); }
-        .stat-lbl { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.5px; }
-        .team-title { font-size: 24px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; }
-        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto; margin-top: 20px; padding-right: 5px; }
+        .stat-val { font-size: 28px; font-weight: 900; color: var(--text-dark); }
+        .stat-lbl { font-size: 12px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 8px; letter-spacing: 0.5px; }
+        .team-title { font-size: 24px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--border-color); padding-bottom: 14px; margin-bottom: 25px; }
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 14px; max-height: 480px; overflow-y: auto; margin-top: 25px; padding-right: 5px; }
         .player-card {
-            display: flex; flex-direction: column; justify-content: space-between; padding: 14px;
+            display: flex; flex-direction: column; justify-content: space-between; padding: 16px;
             background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; cursor: pointer; color: var(--text-dark); box-shadow: 4px 4px 0px var(--border-color);
         }
         .player-card:hover:not(.disabled-card) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0px var(--border-color); }
         .player-card.selected-card { background: rgba(217, 119, 6, 0.15); border-color: var(--pt-gold); box-shadow: 4px 4px 0px var(--pt-gold); }
-        .player-card.disabled-card { opacity: 0.2; cursor: not-allowed; box-shadow: none; transform: none; }
+        .player-card.disabled-card { opacity: 0.18; cursor: not-allowed; box-shadow: none; transform: none; }
         .card-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; align-items: center; }
-        .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; border: 2px solid var(--border-color); }
+        .card-pos { padding: 4px 8px; border-radius: 4px; color: #fff; border: 2px solid var(--border-color); }
         .card-ovr { font-size: 16px; font-weight: 900; }
-        .stadium-wrapper { background: #020617; padding: 12px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 5px 5px 0px var(--border-color); }
-        .ad-boards { display: flex; justify-content: space-between; padding: 6px 14px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 12px; }
+        .stadium-wrapper { background: #020617; padding: 14px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 5px 5px 0px var(--border-color); }
+        .ad-boards { display: flex; justify-content: space-between; padding: 8px 16px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 16px; }
         .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.02) 50%, transparent 50%); background-size: 100% 40px; border: 3px solid var(--pitch-lines); height: 540px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 0; box-sizing: border-box; border-radius: 6px; }
         .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: var(--pitch-lines); transform: translateY(-50%); }
         .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; border: 3px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
@@ -86,33 +87,33 @@
         .pitch-player-node .node-ovr { font-size: 12px; font-weight: 900; }
         .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.65) !important; border: 3px dashed #eab308; transform: scale(1.15); cursor: pointer; animation: pulse 1s infinite alternate; }
         .pitch-player-node.node-filled { background: #1c1917; border: 2px solid var(--pt-green); }
-        .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 14px; display: block; }
-        .selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; }
-        .selector-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; padding: 14px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-dark); box-shadow: 3px 3px 0px var(--border-color); }
+        .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 16px; display: block; }
+        .selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 35px; }
+        .selector-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; padding: 16px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-dark); box-shadow: 3px 3px 0px var(--border-color); }
         .selector-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); }
         .selector-card.active-card { border-color: var(--pt-green); background: rgba(16, 185, 129, 0.15); box-shadow: 3px 3px 0px var(--pt-green); font-weight: 900; }
-        .btn { padding: 18px 28px; font-size: 16px; border-radius: 8px; font-weight: 900; cursor: pointer; border: 3px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; transition: 0.1s; box-shadow: 4px 4px 0px var(--border-color); }
+        .btn { padding: 20px 32px; font-size: 16px; border-radius: 8px; font-weight: 900; cursor: pointer; border: 3px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; transition: 0.1s; box-shadow: 4px 4px 0px var(--border-color); }
         .btn:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 2px 2px 0px var(--border-color); }
         .btn-green { background: var(--pt-green); color: #fff; }
         .btn-red { background: var(--pt-red); color: #fff; }
         .btn-gold-action { background: var(--pt-gold); color: #fff; }
         .btn-large { width: 100%; display: block; }
         .btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform: none; }
-        .projection-card { background: var(--card-inline-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 25px; margin-top: 20px; text-align: center; }
-        .odds-bar-container { margin: 16px 0; text-align: left; }
-        .odds-label { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .odds-bar-bg { background: var(--bg-main); height: 12px; border-radius: 6px; width: 100%; overflow: hidden; border: 2px solid var(--border-color); }
+        .projection-card { background: var(--card-inline-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 30px; margin-top: 25px; text-align: center; display: none; }
+        .odds-bar-container { margin: 18px 0; text-align: left; }
+        .odds-label { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .odds-bar-bg { background: var(--bg-main); height: 14px; border-radius: 7px; width: 100%; overflow: hidden; border: 2px solid var(--border-color); }
         .odds-bar-fill { background: var(--pt-green); height: 100%; width: 0%; transition: width 1.2s cubic-bezier(0.1, 1, 0.1, 1); }
-        .match-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 4px 4px 0px var(--border-color); }
-        .match-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 8px; text-transform: uppercase; }
+        .match-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 8px; padding: 22px; margin-bottom: 20px; box-shadow: 4px 4px 0px var(--border-color); }
+        .match-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; text-transform: uppercase; }
         .match-scorers { font-size: 12px; color: var(--text-muted); font-style: italic; }
-        .league-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; text-align: left; color: inherit; }
-        .league-table th { background: var(--border-color); padding: 12px 10px; font-weight: 700; color: var(--bg-card); }
-        .league-table td { padding: 11px 10px; border-bottom: 2px solid var(--border-color); }
+        .league-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; text-align: left; color: inherit; }
+        .league-table th { background: var(--border-color); padding: 14px 12px; font-weight: 700; color: var(--bg-card); }
+        .league-table td { padding: 12px 12px; border-bottom: 2px solid var(--border-color); }
         .league-table tr.user-team-row { background: rgba(16, 185, 129, 0.2); font-weight: 700; }
-        .footer-credits { margin-top: 70px; padding: 30px 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 3px solid var(--border-color); }
-        .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
-        .footer-links a { color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px; background: var(--bg-card); padding: 12px 22px; border-radius: 6px; border: 2px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); }
+        .footer-credits { margin-top: 80px; padding: 35px 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 3px solid var(--border-color); }
+        .footer-links { margin-top: 25px; display: flex; justify-content: center; gap: 24px; }
+        .footer-links a { color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px; background: var(--bg-card); padding: 14px 24px; border-radius: 6px; border: 2px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); }
         .footer-links a:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); color: var(--pt-gold); }
         @keyframes pulse { from { box-shadow: 0 0 4px #eab308; } to { box-shadow: 0 0 16px #eab308; } }
     </style>
@@ -167,6 +168,8 @@
                 <button id="btn-trigger-reroll" class="btn btn-red btn-large" style="display:none;" onclick="executeReroll()">Baralhar Opções</button>
             </div>
             <div id="draw-squad-zone" style="display: none;"><div id="display-team-name" class="team-title">Equipa</div><div id="display-players-grid" class="players-grid"></div></div>
+            
+            <!-- CAIXA DE PREVISÃO REPOSICIONADA: DISPLAY NONE ATÉ COMPLETO -->
             <div id="projection-zone" class="projection-card">
                 <h3 style="margin-bottom:10px;">Previsão da Época (Casas de Apostas)</h3>
                 <div style="font-size:36px; font-weight:900; color:var(--pt-green); margin:10px 0;" id="proj-place">1º Lugar</div>
@@ -199,7 +202,6 @@
     </div>
 
     <script>
-        // Correção de inicialização do gancho dinâmico de contagem global
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof database !== 'undefined' && database.length > 0) {
                 document.getElementById("st-reg").innerText = database.length;
@@ -212,7 +214,6 @@
 
         function toggleInterfaceTheme() { document.body.classList.toggle("dark-theme"); }
 
-        // Mapeamento otimizado das 6 formações permitidas
         const tacticPitchRows = {
             "4-3-3": { A: ["EXE", "PL", "EXD"], M: ["MC", "MC", "MC"], D: ["DE", "DC", "DC", "DD"] },
             "4-4-2": { A: ["PL", "PL"], M: ["ME", "MC", "MC", "MD"], D: ["DE", "DC", "DC", "DD"] },
@@ -243,7 +244,8 @@
         }
 
         function startDraftSession() {
-            if (typeof database === 'undefined' || database.length === 0) { alert("Erro de ficheiro de dados ausente."); return; }
+            if (typeof database === 'undefined' || database.length === 0) { return; }
+            document.getElementById("projection-zone").style.display = "none";
             const rowsSetup = tacticPitchRows[selectedFormation]; currentPitchFormation = [];
             currentPitchFormation.push({ id: "GR-G-0", sector: "G", role: "GR", name: null, ovr: null });
             ["D", "M", "A"].forEach(key => {
@@ -281,7 +283,7 @@
 
         function drawNextTeamSquad() {
             playerAwaitingPlacement = null; clearPitchNodeHighlights();
-            let pool = database.filter(e => !e.isChampionsOnly);
+            let pool = database.filter(e => e.isChampionsOnly !== true && e.isChampionsOnly !== "true");
             if (selectedDifficulty !== "easy") pool = pool.filter(e => !e.id.includes("alltime"));
             let available = pool.filter(e => !sessionTeamsHistory.includes(e.id));
             if (available.length === 0) { sessionTeamsHistory = []; available = pool; }
@@ -352,11 +354,12 @@
             return { def: aDef, med: aMed, ata: aAta, ger: aTot };
         }
 
+        // PONTO NR 8: NOVAS CONDIÇÕES ATUALIZADAS DE EXIGÊNCIA DE OVERALL POR TROFÉU
         function evalCupStage(userStats, reqMed, reqSec) {
             if (userStats.ger >= reqMed && userStats.def >= reqSec && userStats.med >= reqSec && userStats.ata >= reqSec) {
-                return Math.random() > 0.02; // Margem de segurança de Upset de 2% solicitada
+                return Math.random() > 0.02; // Mínimo de 1% a 2% de risco de colapso garantido
             }
-            return Math.random() < 0.16;
+            return Math.random() < 0.15;
         }
 
         function runSeasonSimulation() {
@@ -381,9 +384,10 @@
                 tableData.push({ id: club.id, name: club.nomeEquipa, ger: cAvg, points: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, isUser: false });
             });
 
-            let meetsLiga = (scores.ger >= 85 && scores.def >= 82 && scores.med >= 82 && scores.ata >= 82);
+            // PONTO NR 5: CORREÇÃO INTEGRAL DA SIMULAÇÃO COM INSERÇÃO DE GOLOS MARCADOS E SOFRIDOS REAIS
+            let meetsLiga = (scores.ger >= 86 && scores.def >= 84 && scores.med >= 84 && scores.ata >= 84);
             if (meetsLiga && Math.random() > 0.02) {
-                tableData.forEach(t => { if(t.isUser) { t.points = 102; t.w = 34; t.gf = 98; t.ga = 11; } else { t.points = Math.floor(Math.random()*55)+22; t.w = Math.floor(t.points/3); t.d = t.points%3; t.l = 34-t.w-t.d; t.gf = Math.floor(Math.random()*40)+25; t.ga = Math.floor(Math.random()*30)+40; } });
+                tableData.forEach(t => { if(t.isUser) { t.points = 102; t.w = 34; t.gf = 95; t.ga = 14; } else { t.points = Math.floor(Math.random()*50)+22; t.w = Math.floor(t.points/3); t.d = t.points%3; t.l = 34-t.w-t.d; t.gf = Math.floor(Math.random()*35)+30; t.ga = Math.floor(Math.random()*30)+45; } });
             } else {
                 for (let i = 0; i < tableData.length; i++) {
                     for (let j = i + 1; j < tableData.length; j++) { determineLgPlacementGolos(tableData[i], tableData[j]); determineLgPlacementGolos(tableData[j], tableData[i]); }
@@ -395,45 +399,67 @@
             tableData.forEach((row, idx) => { tableHtml += `<tr class="${row.isUser ? 'user-team-row' : ''}"><td>${idx + 1}º</td><td>${row.name}</td><td><b>${row.points}</b></td><td>${row.w}</td><td>${row.d}</td><td>${row.l}</td><td>${row.gf}</td><td>${row.ga}</td></tr>`; });
             tableHtml += `</tbody></table>`; tableCard.innerHTML = tableHtml; timeline.appendChild(tableCard);
 
+            // --- TAÇA DA LIGA (PONTUAÇÃO 82, SECTORES 80) ---
             const secTL = document.createElement("div"); secTL.className = "timeline-section-title"; secTL.innerText = "Taça da Liga"; timeline.appendChild(secTL);
-            let tl1 = evalCupStage(scores, 79, 77); appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[0], tl1, false);
-            let tl2 = tl1 ? evalCupStage(scores, 79, 77) : false; if(tl1) appendDetailedMatchCard(timeline, "Meia-Final (Final Four)", tableData[0], chosenLeagueClubs[1], tl2, false);
-            let tl3 = tl2 ? evalCupStage(scores, 79, 77) : false; if(tl2) appendDetailedMatchCard(timeline, "Grande Final", tableData[0], chosenLeagueClubs[2], tl3, false);
+            let tl1 = evalCupStage(scores, 82, 80); appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[0], tl1, false);
+            let tl2 = tl1 ? evalCupStage(scores, 82, 80) : false; if(tl1) appendDetailedMatchCard(timeline, "Meia-Final (Final Four)", tableData[0], chosenLeagueClubs[1], tl2, false);
+            let tl3 = tl2 ? evalCupStage(scores, 82, 80) : false; if(tl2) appendDetailedMatchCard(timeline, "Grande Final", tableData[0], chosenLeagueClubs[2], tl3, false);
 
+            // --- TAÇA DE PORTUGAL (PONTUAÇÃO 84, SECTORES 82) ---
             const secTP = document.createElement("div"); secTP.className = "timeline-section-title"; secTP.innerText = "Taça de Portugal"; timeline.appendChild(secTP);
-            let tp1 = evalCupStage(scores, 82, 80); appendDetailedMatchCard(timeline, "32 avos de Final", tableData[0], chosenLeagueClubs[3], tp1, false);
-            let tp2 = tp1 ? evalCupStage(scores, 82, 80) : false; if(tp1) appendDetailedMatchCard(timeline, "16 avos de Final", tableData[0], chosenLeagueClubs[4], tp2, false);
-            let tp3 = tp2 ? evalCupStage(scores, 82, 80) : false; if(tp2) appendDetailedMatchCard(timeline, "8 avos de Final", tableData[0], chosenLeagueClubs[5], tp3, false);
-            let tp4 = tp3 ? evalCupStage(scores, 82, 80) : false; if(tp3) appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[6], tp4, false);
-            let tp5 = tp4 ? evalCupStage(scores, 82, 80) : false; if(tp4) { appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Ida (1ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Volta (2ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); }
-            let tp6 = tp5 ? evalCupStage(scores, 82, 80) : false; if(tp5) appendDetailedMatchCard(timeline, "Grande Final (Jamor)", tableData[0], chosenLeagueClubs[1], tp6, false);
+            let tp1 = evalCupStage(scores, 84, 82); appendDetailedMatchCard(timeline, "32 avos de Final", tableData[0], chosenLeagueClubs[3], tp1, false);
+            let tp2 = tp1 ? evalCupStage(scores, 84, 82) : false; if(tp1) appendDetailedMatchCard(timeline, "16 avos de Final", tableData[0], chosenLeagueClubs[4], tp2, false);
+            let tp3 = tp2 ? evalCupStage(scores, 84, 82) : false; if(tp2) appendDetailedMatchCard(timeline, "8 avos de Final", tableData[0], chosenLeagueClubs[5], tp3, false);
+            let tp4 = tp3 ? evalCupStage(scores, 84, 82) : false; if(tp3) appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[6], tp4, false);
+            let tp5 = tp4 ? evalCupStage(scores, 84, 82) : false; if(tp4) { appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Ida (1ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Volta (2ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); }
+            let tp6 = tp5 ? evalCupStage(scores, 84, 82) : false; if(tp5) appendDetailedMatchCard(timeline, "Grande Final (Jamor)", tableData[0], chosenLeagueClubs[1], tp6, false);
 
-            const secUCL = document.createElement("div"); secUCL.className = "timeline-section-title"; secUCL.innerText = "UEFA Champions League - Fase de Liga"; timeline.appendChild(secUCL);
-            const giants = database.filter(e => e.isChampionsOnly);
+            // --- PONTO NR 7: SIMULAÇÃO DINÂMICA DA TABELA DAS 36 EQUIPAS DA UEFA CHAMPIONS LEAGUE ---
+            const secUCL = document.createElement("div"); secUCL.className = "timeline-section-title"; secUCL.innerText = "UEFA Champions League - Classificação Fase de Liga"; timeline.appendChild(secUCL);
+            const giants = database.filter(e => e.isChampionsOnly === true || e.isChampionsOnly === "true");
+            let uclW = 0, uclD = 0, uclL = 0, totalUclPoints = 0;
             for (let m = 1; m <= 8; m++) {
-                let opp = giants[(m-1)%giants.length]; let winM = evalCupStage(scores, 88, 84);
-                const mCard = document.createElement("div"); mCard.className = "match-card"; mCard.innerHTML = `<div class="match-header"><span>Jogo ${m} (${m<=4?'Casa':'Fora'})</span><span style="color:var(--pt-green)">${winM?'VITÓRIA':'EMPATE'} vs ${opp.nomeEquipa}</span></div>`; timeline.appendChild(mCard);
+                let opp = giants[(m-1)%giants.length]; let winM = evalCupStage(scores, 88, 86);
+                let gA = 0, gB = 0;
+                if(winM) { uclW++; totalUclPoints += 3; gA = Math.floor(Math.random()*3)+1; gB = Math.floor(Math.random()*gA); } 
+                else { if(Math.random() > 0.4) { uclD++; totalUclPoints += 1; gA = Math.floor(Math.random()*2); gB = gA; } else { uclL++; gB = Math.floor(Math.random()*3)+1; gA = Math.floor(Math.random()*gB); } }
+                let goalsLog = generateScorersBlock(gA > 0, gA, localScorers, gB > 0, gB, opp.jogadores.map(n => n.nome));
+                const mCard = document.createElement("div"); mCard.className = "match-card"; mCard.innerHTML = `<div class="match-header"><span>Jogo ${m} (${m<=4?'Casa':'Fora'})</span><span style="color:${gA>gB?'var(--pt-green)':gA===gB?'var(--pt-amber)':'var(--pt-red)'}">${gA>gB?'VITÓRIA':gA===gB?'EMPATE':'DERROTA'} ${gA}-${gB} vs ${opp.nomeEquipa}</span></div><div class="match-scorers">${goalsLog}</div>`; timeline.appendChild(mCard);
             }
-            const secUclElim = document.createElement("div"); secUclElim.className = "timeline-section-title"; secUclElim.innerText = "UEFA Champions League - Fases Eliminatórias"; timeline.appendChild(secUclElim);
-            let ch1 = evalCupStage(scores, 88, 84); appendDetailedMatchCard(timeline, "Playoffs - Jogo 1 (Ida)", giants[0], tableData[0], ch1, true); appendDetailedMatchCard(timeline, "Playoffs - Jogo 2 (Volta)", giants[0], tableData[0], ch1, true);
-            let ch2 = ch1 ? evalCupStage(scores, 88, 84) : false; if(ch1) { appendDetailedMatchCard(timeline, "Oitavos de Final (1ª Mão)", tableData[0], giants[1], ch2, true); appendDetailedMatchCard(timeline, "Oitavos de Final (2ª Mão)", tableData[0], giants[1], ch2, true); }
-            let ch3 = ch2 ? evalCupStage(scores, 88, 84) : false; if(ch2) { appendDetailedMatchCard(timeline, "Quartos de Final (1ª Mão)", tableData[0], giants[2], ch3, true); appendDetailedMatchCard(timeline, "Quartos de Final (2ª Mão)", tableData[0], giants[2], ch3, true); }
-            let ch4 = ch3 ? evalCupStage(scores, 88, 84) : false; if(ch3) { appendDetailedMatchCard(timeline, "Meias-Finais (1ª Mão)", tableData[0], giants[3], ch4, true); appendDetailedMatchCard(timeline, "Meias-Finais (2ª Mão)", tableData[0], giants[3], ch4, true); }
-            let ch5 = ch4 ? evalCupStage(scores, 88, 84) : false; if(ch4) appendDetailedMatchCard(timeline, "Grande Final Europeia (Jogo Único)", tableData[0], giants[0], ch5, false);
+            
+            // Renderização do Rank Dinâmico das 36 Equipas solicitado
+            let userRank = totalUclPoints >= 21 ? Math.floor(Math.random()*4)+1 : totalUclPoints >= 15 ? Math.floor(Math.random()*8)+9 : Math.floor(Math.random()*11)+17;
+            let rankCard = document.createElement("div"); rankCard.className = "match-card"; rankCard.style.textAlign = "center"; rankCard.innerHTML = `<h3>Fase de Liga Concluída</h3><p style="font-size:18px;">Terminaste em <b style="color:var(--pt-gold); font-size:24px;">${userRank}º Lugar</b> na Tabela Geral das 36 Equipas Europeias.</p>`; timeline.appendChild(rankCard);
 
-            if (tableData[0].w === 34 && tl3 && tp6 && ch5) { screen.classList.add("perfect-screen"); const b = document.createElement("div"); b.style.cssText = "background:#eab308; color:#0f172a; padding:20px; border-radius:8px; font-weight:900; font-size:22px; text-align:center; margin-bottom:20px;"; b.innerText = "⭐ LENDA ABSOLUTA: ALCANÇASTE O 4a0 PERFEITO! 102 PONTOS E LIMPEZA TOTAL DE TROFÉUS ⭐"; timeline.insertBefore(b, timeline.firstChild); }
+            const secUclElim = document.createElement("div"); secUclElim.className = "timeline-section-title"; secUclElim.innerText = "UEFA Champions League - Fases Eliminatórias"; timeline.appendChild(secUclElim);
+            let ch1 = userRank <= 8 ? true : evalCupStage(scores, 88, 86); 
+            if(userRank > 8) { appendDetailedMatchCard(timeline, "Playoffs de Acesso - 1ª Mão", giants[0], tableData[0], ch1, true); appendDetailedMatchCard(timeline, "Playoffs de Acesso - 2ª Mão", giants[0], tableData[0], ch1, true); }
+            let ch2 = ch1 ? evalCupStage(scores, 88, 86) : false; if(ch1) { appendDetailedMatchCard(timeline, "Oitavos de Final - 1ª Mão", tableData[0], giants[1], ch2, true); appendDetailedMatchCard(timeline, "Oitavos de Final - 2ª Mão", tableData[0], giants[1], ch2, true); }
+            let ch3 = ch2 ? evalCupStage(scores, 88, 86) : false; if(ch2) { appendDetailedMatchCard(timeline, "Quartos de Final - 1ª Mão", tableData[0], giants[2], ch3, true); appendDetailedMatchCard(timeline, "Quartos de Final - 2ª Mão", tableData[0], giants[2], ch3, true); }
+            let ch4 = ch3 ? evalCupStage(scores, 88, 86) : false; if(ch3) { appendDetailedMatchCard(timeline, "Meias-Finais - 1ª Mão", tableData[0], giants[3], ch4, true); appendDetailedMatchCard(timeline, "Meias-Finais - 2ª Mão", tableData[0], giants[3], ch4, true); }
+            let ch5 = ch4 ? evalCupStage(scores, 88, 86) : false; if(ch4) appendDetailedMatchCard(timeline, "Grande Final Europeia (Jogo Único)", tableData[0], giants[0], ch5, false);
+
+            let completelyPerfect = (tableData[0].w === 34 && tl3 && tp6 && ch5 && scores.ger >= 90 && scores.def >= 88 && scores.med >= 88 && scores.ata >= 88);
+            if (completelyPerfect) { screen.classList.add("perfect-screen"); const b = document.createElement("div"); b.style.cssText = "background:#eab308; color:#0f172a; padding:20px; border-radius:8px; font-weight:900; font-size:22px; text-align:center; margin-bottom:20px;"; b.innerText = "⭐ LENDA ABSOLUTA: ALCANÇASTE O 4a0 PERFEITO! QUADRUPLE INVICTO COM OVERALL DE CAMPEÃO ⭐"; timeline.insertBefore(b, timeline.firstChild); }
         }
 
         function determineLgPlacementGolos(teamA, teamB) {
             const diff = teamA.ger - teamB.ger; const probA = 0.46 + (diff * 0.035); const rng = Math.random();
-            if (rng < probA) { teamA.points += 3; teamA.w++; teamB.l++; } else if (rng < probA + 0.22) { teamA.points += 1; teamB.points += 1; teamA.d++; teamB.d++; } else { teamB.points += 3; teamB.w++; teamA.l++; }
+            let gA = 0, gB = 0;
+            if (rng < probA) { teamA.points += 3; teamA.w++; teamB.l++; gA = Math.floor(Math.random()*3)+1; gB = Math.floor(Math.random()*gA); } 
+            else if (rng < probA + 0.22) { teamA.points += 1; teamB.points += 1; teamA.d++; teamB.d++; gA = Math.floor(Math.random()*2); gB = gA; } 
+            else { teamB.points += 3; teamB.w++; teamA.l++; gB = Math.floor(Math.random()*3)+1; gA = Math.floor(Math.random()*gB); }
+            teamA.gf += gA; teamA.ga += gB; teamB.gf += gB; teamB.ga += gA;
         }
+
         function generateScorersBlock(hasGoalsA, goalsA, squadA, hasGoalsB, goalsB, squadB) {
             let logA = [], logB = [];
             if (hasGoalsA && goalsA > 0 && squadA.length) { for (let i = 0; i < goalsA; i++) { logA.push(`${squadA[Math.floor(Math.random() * squadA.length)]} ${Math.floor(Math.random() * 86) + 2}'`); } }
             if (hasGoalsB && goalsB > 0 && squadB.length) { for (let i = 0; i < goalsB; i++) { let name = squadB[Math.floor(Math.random() * squadB.length)]; logB.push(`${(typeof name === 'string' ? name : name.nome).split(" ")[0]} ${Math.floor(Math.random() * 86) + 2}'`); } }
             return `Golos Casa: ${logA.length ? logA.join(", ") : 'Nenhum'} | Golos Fora: ${logB.length ? logB.join(", ") : 'Nenhum'}`;
         }
+
+        // PONTO NR 6: ATUALIZAÇÃO CORRETA DA COR LARANJA/AMBAR PARA CASOS DE EMPATE
         function appendDetailedMatchCard(container, stageName, userTeam, opponent, isUserWin, isTwoLegged) {
             const card = document.createElement("div"); card.className = "match-card";
             let goalsA = isUserWin ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2);
@@ -443,12 +469,32 @@
             const userPlayers = currentPitchFormation.map(n => n.name ? n.name.split(" ")[0] : "Jogador");
             let goalsLog = generateScorersBlock(true, goalsA, userPlayers, true, goalsB, oppPlayers);
             let footerExtra = isTwoLegged ? ` <span style='font-size:11px; color:var(--text-muted);'>(Agregado: ${goalsA}-${goalsB})</span>` : "";
-            card.innerHTML = `<div class="match-header"><span>${stageName}</span><span style="color: ${isUserWin ? 'var(--pt-green)' : 'var(--pt-red)'}">${isUserWin ? 'VITÓRIA' : 'DERROTA'} ${goalsA} - ${goalsB} vs ${opponent.nomeEquipa || opponent.name}${footerExtra}</span></div><div class="match-scorers">${goalsLog}</div>`;
+            let colorResult = goalsA > goalsB ? 'var(--pt-green)' : goalsA === goalsB ? 'var(--pt-amber)' : 'var(--pt-red)';
+            card.innerHTML = `<div class="match-header"><span>${stageName}</span><span style="color: ${colorResult}">${goalsA > goalsB ? 'VITÓRIA' : goalsA === goalsB ? 'EMPATE' : 'DERROTA'} ${goalsA} - ${goalsB} vs ${opponent.nomeEquipa || opponent.name}${footerExtra}</span></div><div class="match-scorers">${goalsLog}</div>`;
             container.appendChild(card);
         }
+
         function clearPitchNodeHighlights() { currentPitchFormation.forEach(node => { const el = document.getElementById(`node-ui-${node.id}`); if (el) { el.classList.remove("node-active"); if (!node.name) el.onclick = null; } }); }
         function updateRoundLabels() { document.getElementById("round-title").innerText = `Ronda ${activeRoundCount + 1} de 11`; }
-        function triggerPreSeasonOddsDisplay() { document.getElementById("projection-zone").style.display = "block"; }
+        
+        // PONTO NR 4: CONTROLE DO GATILHO DAS ODDS BARS PRE-SEASON
+        function triggerPreSeasonOddsDisplay() { 
+            const scores = calculateTeamOveralls(); 
+            let oddPerfect = Math.max(0, Math.min(99, (scores.ger - 74) * 6)); if (scores.ger < 82) oddPerfect = 0;
+            document.getElementById("proj-place").innerText = scores.ger >= 86 ? "1º Lugar" : scores.ger >= 82 ? "2º Lugar" : "4º Lugar";
+            document.getElementById("proj-points").innerText = scores.ger >= 86 ? "102 (Meta)" : Math.round(scores.ger * 0.95);
+            document.getElementById("txt-odd-1").innerText = `${oddPerfect}%`; 
+            document.getElementById("txt-odd-2").innerText = `${Math.max(0, Math.min(95, scores.ger - 5))}%`;
+            document.getElementById("txt-odd-3").innerText = `${Math.max(0, Math.min(95, scores.ger - 8))}%`; 
+            document.getElementById("txt-odd-4").innerText = `${Math.max(0, scores.ger - 78)}%`;
+            document.getElementById("projection-zone").style.display = "block"; 
+            setTimeout(() => { 
+                document.getElementById("bar-odd-1").style.width = `${oddPerfect}%`; 
+                document.getElementById("bar-odd-2").style.width = `${Math.max(0, Math.min(95, scores.ger - 5))}%`; 
+                document.getElementById("bar-odd-3").style.width = `${Math.max(0, Math.min(95, scores.ger - 8))}%`; 
+                document.getElementById("bar-odd-4").style.width = `${Math.max(0, scores.ger - 78)}%`; 
+            }, 100);
+        }
     </script>
 </body>
 </html>
