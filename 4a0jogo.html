@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4a0 - Draft & Simulador de Campeonatos</title>
+    <style>
+        :root {
+            --bg-main: #0f172a; --bg-card: #1e293b; --pt-green: #10b981; --pt-red: #f43f5e; --pt-gold: #eab308;
+            --pitch-green: #047857; --pitch-lines: rgba(255, 255, 255, 0.35);
+            --text-dark: #f8fafc; --text-muted: #94a3b8; --border-color: #334155;
+            --color-gr: #f97316; --color-def: #3b82f6; --color-med: #10b981; --color-ata: #ef4444;
+        }
+        body.light-theme {
+            --bg-main: #e2e8f0; --bg-card: #ffffff; --text-dark: #0f172a; --text-muted: #475569;
+            --border-color: #cbd5e1; --pitch-green: #15803d; --pitch-lines: rgba(255, 255, 255, 0.5); --pt-gold: #d97706;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main); color: var(--text-dark); margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            justify-content: space-between; box-sizing: border-box; transition: 0.2s;
+        }
+        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 800; }
+        .theme-toggle-btn {
+            position: absolute; top: 15px; right: 15px; background: var(--bg-card);
+            border: 2px solid var(--border-color); color: inherit; padding: 8px 14px;
+            border-radius: 20px; cursor: pointer; font-weight: 800; font-size: 13px; z-index: 10;
+        }
+        #main-menu, #simulation-screen {
+            width: 100%; max-width: 700px; background: var(--bg-card); padding: 35px;
+            border-radius: 16px; border: 1px solid var(--border-color); margin-top: 40px;
+        }
+        #simulation-screen { display: none; max-width: 850px; }
+        #game-container { display: none; width: 100%; max-width: 1250px; grid-template-columns: 1fr; gap: 20px; margin-top: 40px; }
+        @media (min-width: 1024px) { #game-container { grid-template-columns: 1.1fr 0.9fr; } }
+        .panel { background: var(--bg-card); border-radius: 14px; padding: 20px; border: 1px solid var(--border-color); }
+        .team-title { font-size: 24px; font-weight: 900; margin: 10px 0; }
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; max-height: 460px; overflow-y: auto; margin-top: 15px; }
+        .player-card {
+            display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
+            background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; color: #ffffff;
+        }
+        body.light-theme .player-card { background: #1e293b; }
+        .player-card.selected-card { border-color: #eab308; background-color: #3f3f46; }
+        .player-card.disabled-card { opacity: 0.2; cursor: not-allowed; }
+        .card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; align-items: center; }
+        .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; font-size: 10px; font-weight: 900; }
+        .card-ovr { font-size: 16px; font-weight: 900; }
+        .stadium-wrapper { background: #0f172a; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .ad-boards { display: flex; justify-content: space-between; padding: 4px 10px; background: #020617; color: #64748b; font-size: 10px; font-weight: 800; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 6px; }
+        .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.015) 50%, transparent 50%); background-size: 100% 30px; border: 2px solid var(--pitch-lines); height: 500px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 15px 0; box-sizing: border-box; border-radius: 4px; }
+        .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--pitch-lines); transform: translateY(-50%); }
+        .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
+        .pitch-line-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; }
+        .pitch-player-node { width: 64px; height: 64px; background: #0f172a; border: 2px solid #475569; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2px; box-sizing: border-box; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .pitch-player-node .node-pos { font-size: 9px; font-weight: 900; margin-bottom: 1px; padding: 1px 4px; border-radius: 3px; color: #fff; }
+        .pitch-player-node .node-name { font-size: 9px; font-weight: 700; max-width: 58px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pitch-player-node .node-ovr { font-size: 11px; font-weight: 900; }
+        .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.45); border: 2px dashed #eab308; transform: scale(1.1); cursor: pointer; }
+        .pitch-player-node.node-filled { background: #0f172a; border: 2px solid var(--pt-green); }
+        .menu-subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; display: block; }
+        .selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .selector-card { background: rgba(15, 23, 42, 0.6); border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-muted); }
+        .selector-card.active-card { border-color: var(--pt-green); color: var(--text-dark); background: rgba(16, 185, 129, 0.15); }
+        .difficulty-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; text-align: center; }
+        .btn { padding: 16px 24px; font-size: 16px; border-radius: 8px; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-green { background: var(--pt-green); color: #0f172a; }
+        .btn-red { background: var(--pt-red); color: #fff; }
+        .btn-gold-action { background: var(--pt-gold); color: #0f172a; box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4); border: 2px solid rgba(255,255,255,0.2); }
+        .btn-large { width: 100%; display: block; }
+        .projection-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-top: 15px; text-align: center; color: #fff; }
+        body.light-theme .projection-card { background: rgba(15, 23, 42, 0.05); color: inherit; }
+        .odds-bar-container { margin: 12px 0; text-align: left; }
+        .odds-label { font-size: 12px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 4px;}
+        .odds-bar-bg { background: #1e293b; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
+        body.light-theme .odds-bar-bg { background: #cbd5e1; }
+        .odds-bar-fill { background: var(--pt-green); height: 100%; width: 0%; transition: width 1s; }
+        .match-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; color: #fff; }
+        body.light-theme .match-card { background: var(--bg-card); color: inherit; border-color: var(--border-color); }
+        .match-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 6px; }
+        body.light-theme .match-header { border-bottom-color: var(--border-color); }
+        .match-scorers { font-size: 12px; color: var(--text-muted); font-style: italic; }
+        .league-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; color: inherit; }
+        .league-table th { background: #0f172a; padding: 10px 8px; color: #94a3b8; }
+        body.light-theme .league-table th { background: #cbd5e1; color: #475569; }
+        .league-table td { padding: 9px 8px; border-bottom: 1px solid #1e293b; }
+        body.light-theme .league-table td { border-bottom-color: var(--border-color); }
+        .league-table tr.user-team-row { background: rgba(16, 185, 129, 0.25); font-weight: 700; }
+        .perfect-screen { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%) !important; border: 3px solid #eab308 !important; animation: pulse-gold 2s infinite alternate; }
+        @keyframes pulse-gold { from { box-shadow: 0 0 10px rgba(234,179,8,0.2); } to { box-shadow: 0 0 30px rgba(234,179,8,0.6); } }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle-btn" onclick="toggleInterfaceTheme()">☀️ / 🌙</button>
+
+    <div id="main-menu">
+        <h1>4a0 • LIGA PORTUGUESA</h1>
+        <div class="menu-subtitle">Alcança a Época Perfeita: 34 vitórias seguidas na Liga Portugal (102 Pts) e conquista invicta de todas as Taças nacionais e europeias.</div>
+        <div style="text-align:center; font-size:12px; margin-bottom:20px; font-weight:700; color:var(--pt-green);" id="ui-local-record-label">🏆 Recorde Pessoal Registado: 0 Pontos na Liga</div>
+
+        <div class="setup-group"><span class="section-label">Formação</span><div class="selector-grid" id="group-formations"><div class="selector-card active-card" onclick="setForm('4-3-3', this)">4-3-3</div><div class="selector-card" onclick="setForm('4-4-2', this)">4-4-2</div><div class="selector-card" onclick="setForm('3-5-2', this)">3-5-2</div><div class="selector-card" onclick="setForm('4-2-3-1', this)">4-2-3-1</div><div class="selector-card" onclick="setForm('4-5-1', this)">4-5-1</div><div class="selector-card" onclick="setForm('3-4-3', this)">3-4-3</div><div class="selector-card" onclick="setForm('5-3-2', this)">5-3-2</div><div class="selector-card" onclick="setForm('5-4-1', this)">5-4-1</div><div class="selector-card" onclick="setForm('4-1-2-1-2', this)">4-1-2-1-2</div><div class="selector-card" onclick="setForm('3-4-1-2', this)">3-4-1-2</div><div class="selector-card" onclick="setForm('4-3-1-2', this)">4-3-1-2</div><div class="selector-card" onclick="setForm('5-2-3', this)">5-2-3</div></div></div>
+        <div class="setup-group"><span class="section-label">Dificuldade</span><div class="selector-grid" id="group-difficulties" style="grid-template-columns: repeat(3, 1fr);"><div class="selector-card active-card" onclick="setDiff('easy', this)">Fácil</div><div class="selector-card" onclick="setDiff('medium', this)">Médio</div><div class="selector-card" onclick="setDiff('hard', this)">Difícil</div></div></div>
+        <div class="difficulty-desc" id="lbl-diff-desc">Permite equipas All-Time e concede 3 baralhamentos livres.</div>
+        <button class="btn btn-gold-action btn-large" onclick="startDraftSession()">START DRAFT</button>
+    </div>
+
+    <div id="game-container">
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;"><span id="round-title" style="font-weight: 800; color: var(--text-muted);">Ronda 1/11</span><span id="reroll-counter" style="font-size:12px; font-weight:700; color:var(--pt-red); display:none;">Baralhamentos: 3</span></div>
+            <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"><button id="btn-trigger-draw" class="btn btn-green btn-large" onclick="drawNextTeamSquad()">Sortear Equipa</button><button id="btn-trigger-reroll" class="btn btn-red btn-large" style="display:none;" onclick="executeReroll()">Baralhar Opções</button></div>
+            <div id="draw-squad-zone" style="display: none;"><div id="display-team-name" class="team-title">Equipa</div><div id="display-players-grid" class="players-grid"></div></div>
+            <div id="projection-zone" class="projection-card" style="display: none;"><h3>Previsão das Casas de Apostas</h3><div style="font-size:32px; font-weight:900; color:var(--pt-green); margin:10px 0;" id="proj-place">1º Lugar</div><div style="font-size:12px; color:var(--text-muted); font-weight:700; margin-bottom:15px;">Pontos Esperados na Liga: <span id="proj-points" style="color:#fff">85</span> pts</div><div class="odds-bar-container"><div class="odds-label"><span>Campanha de 102 Pts Perfeitos</span><span id="txt-odd-1">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-1" class="odds-bar-fill"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça de Portugal</span><span id="txt-odd-2">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-2" class="odds-bar-fill" style="background:#3b82f6;"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça da Liga</span><span id="txt-odd-3">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-3" class="odds-bar-fill" style="background:#a855f7;"></div></div></div><div class="odds-bar-container"><div class="odds-label"><span>Vencer a Liga dos Campeões</span><span id="txt-odd-4">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-4" class="odds-bar-fill" style="background:#eab308;"></div></div></div></div>
+        </div>
+        <div class="panel">
+            <div class="stadium-wrapper"><div class="ad-boards"><span>★ 4A0.COM</span><span>LIGA PORTUGUESA</span><span>TAÇA DE PORTUGAL ★</span></div><div class="football-pitch" id="live-pitch"><div class="pitch-center-circle"></div></div></div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:12px; text-align:center; font-size:11px; font-weight:700;"><div style="background:rgba(15, 23, 42, 0.4); padding:8px; border-radius:4px; border:1px solid var(--border-color);">DEF: <span id="ovr-def" style="color:#3b82f6; font-weight:900;">0</span></div><div style="background:rgba(15, 23, 42, 0.4); padding:8px; border-radius:4px; border:1px solid var(--border-color);">MED: <span id="ovr-med" style="color:var(--pt-green); font-weight:900;">0</span></div><div style="background:rgba(15, 23, 42, 0.4); padding:8px; border-radius:4px; border:1px solid var(--border-color);">ATA: <span id="ovr-ata" style="color:var(--pt-red); font-weight:900;">0</span></div><div style="background:var(--pt-green); color:#0f172a; padding:8px; border-radius:4px; font-weight:900;">GER: <span id="ovr-tot">0</span></div></div>
+            <button id="btn-simulate-season" class="btn btn-green btn-large" style="margin-top:15px; display:none;" onclick="runSeasonSimulation()">Simular Temporada</button>
+        </div>
+    </div>
+
+    <div id="simulation-screen">
+        <h2>Resultados da Temporada</h2>
+        <div id="simulation-results" style="background: var(--bg-card); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);"></div>
+        <button class="btn btn-gold-action btn-large" style="margin-top: 20px;" onclick="backToMenu()">Voltar ao Menu</button>
+    </div>
+
+    <script src="dados.js"></script>
+    <script>
+        // ===================================================================
+        // CONFIGURAÇÃO GLOBAL
+        // ===================================================================
+        let currentFormation = '4-3-3';
+        let currentDifficulty = 'easy';
+        let selectedTeam = null;
+        let userTeamPlayers = [];
+        let rerollsLeft = 3;
+        let draftRound = 1;
+        let totalRounds = 11;
+
+        // Mapeamento de formações para número de jogadores por posição
+        const formationMap = {
+            '4-3-3': { DD: 2, DC: 2, DE: 2, MC: 3, EXD: 1, EXE: 1, PL: 0 },
+            '4-4-2': { DD: 2, DC: 2, DE: 2, MC: 4, EXD: 0, EXE: 0, PL: 2 },
+            '3-5-2': { DD: 0, DC: 3, DE: 2, MC: 5, EXD: 0, EXE: 0, PL: 1 },
+            '4-2-3-1': { DD: 2, DC: 2, DE: 2, MC: 2, EXD: 1, EXE: 1, PL: 1 },
+            '4-5-1': { DD: 2, DC: 2, DE: 2, MC: 5, EXD: 0, EXE: 0, PL: 0 },
+            '3-4-3': { DD: 0, DC: 3, DE: 2, MC: 4, EXD: 1, EXE: 1, PL: 0 },
+            '5-3-2': { DD: 2, DC: 3, DE: 2, MC: 3, EXD: 0, EXE: 0, PL: 1 },
+            '5-4-1': { DD: 2, DC: 3, DE: 2, MC: 4, EXD: 0, EXE: 0, PL: 0 },
+            '4-1-2-1-2': { DD: 2, DC: 2, DE: 2, MC: 1, EXD: 1, EXE: 1, PL: 2 },
+            '3-4-1-2': { DD: 0, DC: 3, DE: 2, MC: 4, EXD: 0, EXE: 1, PL: 1 },
+            '4-3-1-2': { DD: 2, DC: 2, DE: 2, MC: 3, EXD: 0, EXE: 1, PL: 1 },
+            '5-2-3': { DD: 2, DC: 3, DE: 2, MC: 2, EXD: 0, EXE: 1, PL: 1 }
+        };
+
+        // Mapa de abreviações de posições
+        const positionMap = {
+            'GR': 'GR',
+            'DD': 'DD',
+            'DC': 'DC',
+            'DE': 'DE',
+            'MC': 'MC',
+            'EXD': 'EXD',
+            'EXE': 'EXE',
+            'PL': 'PL'
+        };
+
+        // ===================================================================
+        // FUNÇÕES DE MENU
+        // ===================================================================
+        function setForm(form, element) {
+            currentFormation = form;
+            document.querySelectorAll('#group-formations .selector-card').forEach(e => e.classList.remove('active-card'));
+            element.classList.add('active-card');
+        }
+
+        function setDiff(diff, element) {
+            currentDifficulty = diff;
+            document.querySelectorAll('#group-difficulties .selector-card').forEach(e => e.classList.remove('active-card'));
+            element.classList.add('active-card');
+
+            const desc = {
+                'easy': 'Permite equipas All-Time e concede 3 baralhamentos livres.',
+                'medium': 'Sem equipas All-Time, apenas 2 baralhamentos livres.',
+                'hard': 'Sem equipas All-Time, apenas 1 baralhamento livre.'
+            };
+            document.getElementById('lbl-diff-desc').textContent = desc[diff];
+        }
+
+        function startDraftSession() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'grid';
+            draftRound = 1;
+            rerollsLeft = currentDifficulty === 'easy' ? 3 : (currentDifficulty === 'medium' ? 2 : 1);
+            updateDraftUI();
+        }
+
+        // ===================================================================
+        // SISTEMA DE DRAFT
+        // ===================================================================
+        function updateDraftUI() {
+            document.getElementById('round-title').textContent = `Ronda ${draftRound}/${totalRounds}`;
+            if (rerollsLeft > 0) {
+                document.getElementById('reroll-counter').style.display = 'inline';
+                document.getElementById('reroll-counter').textContent = `Baralhamentos: ${rerollsLeft}`;
+            }
+        }
+
+        function drawNextTeamSquad() {
+            // Filtra apenas equipas portuguesas
+            const portugueseTeams = database.filter(t => {
+                if (currentDifficulty !== 'easy' && t.id.includes('alltime')) return false;
+                return t.id.startsWith('por_') || t.id.startsWith('slb_') || t.id.startsWith('scp_');
+            });
+
+            // Seleciona equipa aleatória
+            selectedTeam = portugueseTeams[Math.floor(Math.random() * portugueseTeams.length)];
+            userTeamPlayers = [...selectedTeam.jogadores];
+
+            displayTeamSquad();
+            document.getElementById('btn-trigger-draw').style.display = 'none';
+            document.getElementById('btn-trigger-reroll').style.display = rerollsLeft > 0 ? 'block' : 'none';
+        }
+
+        function displayTeamSquad() {
+            const squad = document.getElementById('display-squad-zone');
+            squad.style.display = 'block';
+            document.getElementById('display-team-name').textContent = selectedTeam.nomeEquipa;
+
+            const grid = document.getElementById('display-players-grid');
+            grid.innerHTML = '';
+
+            userTeamPlayers.forEach((player, idx) => {
+                const card = createPlayerCard(player, idx);
+                grid.appendChild(card);
+            });
+
+            updateTeamOveralls();
+            updatePitch();
+            document.getElementById('btn-trigger-draw').textContent = 'Próximo';
+        }
+
+        function createPlayerCard(player, idx) {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.onclick = () => selectPlayer(player, idx);
+
+            const posStr = player.posicoes.join('/');
+            const color = getPositionColor(player.posicoes[0]);
+
+            card.innerHTML = `
+                <div class="card-top">
+                    <div class="card-pos" style="background:${color}">${posStr}</div>
+                    <div class="card-ovr" style="color:${color}">${player.ovr}</div>
+                </div>
+                <div style="font-size:12px; font-weight:700;">${player.nome}</div>
+            `;
+
+            return card;
+        }
+
+        function getPositionColor(pos) {
+            const colors = {
+                'GR': '#f97316',
+                'DD': '#3b82f6', 'DE': '#3b82f6', 'DC': '#3b82f6',
+                'MC': '#10b981',
+                'EXD': '#ef4444', 'EXE': '#ef4444', 'PL': '#ef4444'
+            };
+            return colors[pos] || '#94a3b8';
+        }
+
+        function selectPlayer(player, idx) {
+            // Implementar lógica de seleção de jogador
+        }
+
+        function executeReroll() {
+            if (rerollsLeft > 0) {
+                rerollsLeft--;
+                drawNextTeamSquad();
+            }
+        }
+
+        function updateTeamOveralls() {
+            const formation = formationMap[currentFormation];
+            let defTotal = 0, medTotal = 0, ataTotal = 0;
+
+            // Calcular OVR por posição
+            let defCount = 0, medCount = 0, ataCount = 0;
+
+            userTeamPlayers.forEach(p => {
+                const pos = p.posicoes[0];
+                if (['DD', 'DC', 'DE'].includes(pos)) {
+                    defTotal += p.ovr;
+                    defCount++;
+                } else if (pos === 'MC') {
+                    medTotal += p.ovr;
+                    medCount++;
+                } else if (['EXD', 'EXE', 'PL'].includes(pos)) {
+                    ataTotal += p.ovr;
+                    ataCount++;
+                }
+            });
+
+            const defAvg = defCount > 0 ? Math.round(defTotal / defCount) : 0;
+            const medAvg = medCount > 0 ? Math.round(medTotal / medCount) : 0;
+            const ataAvg = ataCount > 0 ? Math.round(ataTotal / ataCount) : 0;
+            const geral = Math.round((defTotal + medTotal + ataTotal) / (defCount + medCount + ataCount));
+
+            document.getElementById('ovr-def').textContent = defAvg;
+            document.getElementById('ovr-med').textContent = medAvg;
+            document.getElementById('ovr-ata').textContent = ataAvg;
+            document.getElementById('ovr-tot').textContent = geral;
+        }
+
+        function updatePitch() {
+            const pitch = document.getElementById('live-pitch');
+            pitch.innerHTML = '<div class="pitch-center-circle"></div>';
+
+            const formation = currentFormation.split('-').map(Number);
+            const rows = [
+                { players: 1, pos: 'GR' },
+                { players: formation[0], pos: 'DEF' },
+                { players: formation[1], pos: 'MED' },
+                { players: formation[2], pos: 'ATA' }
+            ];
+
+            const defPlayers = userTeamPlayers.filter(p => ['DD', 'DC', 'DE'].includes(p.posicoes[0])).slice(0, formation[0]);
+            const medPlayers = userTeamPlayers.filter(p => p.posicoes[0] === 'MC').slice(0, formation[1]);
+            const ataPlayers = userTeamPlayers.filter(p => ['EXD', 'EXE', 'PL'].includes(p.posicoes[0])).slice(0, formation[2]);
+            const grPlayer = userTeamPlayers.find(p => p.posicoes[0] === 'GR');
+
+            [grPlayer, ...defPlayers, ...medPlayers, ...ataPlayers].forEach(p => {
+                if (!p) return;
+                const node = document.createElement('div');
+                node.className = 'pitch-player-node node-filled';
+                node.innerHTML = `
+                    <div class="node-pos" style="background:${getPositionColor(p.posicoes[0])}">${p.posicoes[0]}</div>
+                    <div class="node-name">${p.nome.substring(0, 8)}</div>
+                    <div class="node-ovr">${p.ovr}</div>
+                `;
+                pitch.appendChild(node);
+            });
+        }
+
+        function runSeasonSimulation() {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('simulation-screen').style.display = 'block';
+
+            const results = simulateAllCompetitions();
+            displaySimulationResults(results);
+        }
+
+        // ===================================================================
+        // SIMULAÇÃO DE COMPETIÇÕES
+        // ===================================================================
+        function simulateAllCompetitions() {
+            const results = {};
+
+            // Validar equipas
+            const avgOvr = calculateTeamAverageOVR();
+            const defOvr = calculateSectorOVR(['DD', 'DC', 'DE']);
+            const medOvr = calculateSectorOVR(['MC']);
+            const ataOvr = calculateSectorOVR(['EXD', 'EXE', 'PL']);
+
+            // Competições
+            results.liga = simulateLiga(avgOvr, defOvr, medOvr, ataOvr);
+            results.taçaLiga = simulateTaçaLiga(avgOvr, defOvr, medOvr, ataOvr);
+            results.taçaPortugal = simulateTaçaPortugal(avgOvr, defOvr, medOvr, ataOvr);
+            results.champions = simulateChampions(avgOvr, defOvr, medOvr, ataOvr);
+
+            return results;
+        }
+
+        function calculateTeamAverageOVR() {
+            const total = userTeamPlayers.reduce((sum, p) => sum + p.ovr, 0);
+            return Math.round(total / userTeamPlayers.length);
+        }
+
+        function calculateSectorOVR(positions) {
+            const players = userTeamPlayers.filter(p => positions.includes(p.posicoes[0]));
+            if (players.length === 0) return 0;
+            const total = players.reduce((sum, p) => sum + p.ovr, 0);
+            return Math.round(total / players.length);
+        }
+
+        function simulateLiga(avg, def, med, ata) {
+            // Liga: min 85 avg, todos setores >= 82
+            const minAvg = 85, minSector = 82;
+            let winChance = 0;
+
+            if (avg >= minAvg && def >= minSector && med >= minSector && ata >= minSector) {
+                winChance = 99; // 99% se cumprir
+            } else {
+                winChance = Math.max(1, (avg - 75) * 2); // Escalado
+            }
+
+            winChance = Math.min(99, Math.max(1, winChance)); // 1% mín, 99% máx
+            const won = Math.random() * 100 < winChance;
+
+            return {
+                competition: 'Liga Portuguesa',
+                won: won,
+                points: won ? 102 : Math.round(70 + Math.random() * 30),
+                requirement: `Avg ${minAvg} | DEF ${minSector} | MED ${minSector} | ATA ${minSector}`,
+                current: `Avg ${avg} | DEF ${def} | MED ${med} | ATA ${ata}`
+            };
+        }
+
+        function simulateTaçaLiga(avg, def, med, ata) {
+            const minAvg = 79, minSector = 77;
+            let winChance = 0;
+
+            if (avg >= minAvg && def >= minSector && med >= minSector && ata >= minSector) {
+                winChance = 99;
+            } else {
+                winChance = Math.max(1, (avg - 70) * 2);
+            }
+
+            winChance = Math.min(99, Math.max(1, winChance));
+            const won = Math.random() * 100 < winChance;
+
+            return {
+                competition: 'Taça da Liga',
+                won: won,
+                stage: won ? 'Campeão' : ['Quartos', 'Meias', 'Final'][Math.floor(Math.random() * 3)],
+                requirement: `Avg ${minAvg} | DEF ${minSector} | MED ${minSector} | ATA ${minSector}`,
+                current: `Avg ${avg} | DEF ${def} | MED ${med} | ATA ${ata}`
+            };
+        }
+
+        function simulateTaçaPortugal(avg, def, med, ata) {
+            const minAvg = 82, minSector = 80;
+            let winChance = 0;
+
+            if (avg >= minAvg && def >= minSector && med >= minSector && ata >= minSector) {
+                winChance = 99;
+            } else {
+                winChance = Math.max(1, (avg - 75) * 2);
+            }
+
+            winChance = Math.min(99, Math.max(1, winChance));
+            const won = Math.random() * 100 < winChance;
+
+            return {
+                competition: 'Taça de Portugal',
+                won: won,
+                stage: won ? 'Campeão' : ['32avos', '16avos', '8avos', 'Quartos', 'Meias'][Math.floor(Math.random() * 5)],
+                requirement: `Avg ${minAvg} | DEF ${minSector} | MED ${minSector} | ATA ${minSector}`,
+                current: `Avg ${avg} | DEF ${def} | MED ${med} | ATA ${ata}`
+            };
+        }
+
+        function simulateChampions(avg, def, med, ata) {
+            const minAvg = 88, minSector = 84;
+            let winChance = 0;
+
+            if (avg >= minAvg && def >= minSector && med >= minSector && ata >= minSector) {
+                winChance = 99;
+            } else {
+                winChance = Math.max(1, (avg - 80) * 2);
+            }
+
+            winChance = Math.min(99, Math.max(1, winChance));
+            const won = Math.random() * 100 < winChance;
+
+            return {
+                competition: 'Champions League',
+                won: won,
+                stage: won ? 'Campeão' : ['Liga', 'Playoffs', 'Oitavos', 'Quartos', 'Meias'][Math.floor(Math.random() * 5)],
+                requirement: `Avg ${minAvg} | DEF ${minSector} | MED ${minSector} | ATA ${minSector}`,
+                current: `Avg ${avg} | DEF ${def} | MED ${med} | ATA ${ata}`
+            };
+        }
+
+        function displaySimulationResults(results) {
+            const html = `
+                <h3>🏆 Resultados da Temporada</h3>
+                <div style="margin: 20px 0;">
+                    ${Object.values(results).map(r => `
+                        <div style="background: ${r.won ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)'}; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid ${r.won ? '#10b981' : '#f43f5e'};">
+                            <div style="font-weight: 900; font-size: 16px; color: ${r.won ? '#10b981' : '#f43f5e'};">${r.competition} - ${r.won ? '✅ VENCIDO' : '❌ NÃO VENCIDO'}</div>
+                            <div style="font-size: 12px; margin-top: 8px;">
+                                ${r.points ? `<div>Pontos: ${r.points}</div>` : `<div>Fase: ${r.stage}</div>`}
+                                <div style="margin-top: 5px; color: var(--text-muted); font-size: 11px;">
+                                    Requerido: ${r.requirement}<br>
+                                    Sua Equipa: ${r.current}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('simulation-results').innerHTML = html;
+        }
+
+        function backToMenu() {
+            document.getElementById('simulation-screen').style.display = 'none';
+            document.getElementById('main-menu').style.display = 'block';
+        }
+
+        function toggleInterfaceTheme() {
+            document.body.classList.toggle('light-theme');
+        }
+    </script>
+</body>
+</html>
