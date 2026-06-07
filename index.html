@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>4a0 - Draft & Simulador de Campeonatos</title>
-    
-    <!-- LIGAÇÃO À BASE DE DADOS HOSPEDADA NO TEU REPOSITÓRIO -->
     <script src="dados.js"></script>
-
     <style>
         :root {
-            /* TEMA CLARO RETRO (ESTILO 7A0) - PADRÃO DO SITE */
             --bg-main: #f4f1ea;
             --bg-card: #ffffff;
             --text-dark: #1c1917;
@@ -25,172 +21,106 @@
             --color-def: #2563eb;
             --color-med: #059669;
             --color-ata: #dc2626;
-            --card-inline-bg: #fafafa;
-            --block-shadow: 5px 5px 0px #1c1917;
+            --card-inline-bg: #efede6;
+            --block-shadow: 6px 6px 0px #1c1917;
         }
-
         body.dark-theme {
-            /* TEMA ESCURO SECUNDÁRIO COM SOMBRAS CORRIGIDAS */
             --bg-main: #0f172a;
             --bg-card: #1e293b;
             --text-dark: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #f8fafc;
+            --border-color: #020617;
             --pitch-green: #047857;
             --pitch-lines: rgba(255, 255, 255, 0.35);
             --pt-gold: #eab308;
             --card-inline-bg: #0f172a;
-            --block-shadow: 5px 5px 0px #020617; /* Sombra preta profunda e elegante */
+            --block-shadow: 6px 6px 0px #020617;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-dark);
-            margin: 0; padding: 15px;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; justify-content: space-between; box-sizing: border-box;
-            transition: background-color 0.2s, color 0.2s;
+            background-color: var(--bg-main); color: var(--text-dark); margin: 0; padding: 25px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            justify-content: space-between; box-sizing: border-box; transition: 0.2s;
         }
-
-        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
-
+        h1, h2, h3 { color: inherit; text-align: center; margin-top: 0; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 24px; }
         .theme-toggle-btn {
-            position: absolute; top: 15px; right: 15px;
-            background: var(--bg-card); border: 2px solid var(--border-color);
-            color: inherit; padding: 8px 14px; border-radius: 8px;
-            cursor: pointer; font-weight: 900; font-size: 13px; z-index: 10;
-            box-shadow: 2px 2px 0px var(--border-color);
+            position: absolute; top: 20px; right: 20px; background: var(--bg-card); border: 3px solid var(--border-color);
+            color: inherit; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 13px; z-index: 10;
         }
-
         #main-menu, #simulation-screen {
-            width: 100%; max-width: 750px;
-            background: var(--bg-card); padding: 35px;
-            border-radius: 12px; border: 3px solid var(--border-color);
-            margin-top: 40px; box-shadow: var(--block-shadow);
+            width: 100%; max-width: 760px; background: var(--bg-card); padding: 40px;
+            border-radius: 12px; border: 3px solid var(--border-color); margin-top: 40px; box-shadow: var(--block-shadow);
         }
-
         #simulation-screen { display: none; max-width: 880px; }
-
-        #game-container {
-            display: none; width: 100%; max-width: 1300px;
-            grid-template-columns: 1fr; gap: 25px; margin-top: 40px;
-        }
-
+        #game-container { display: none; width: 100%; max-width: 1300px; grid-template-columns: 1fr; gap: 30px; margin-top: 40px; }
         @media (min-width: 1024px) { #game-container { grid-template-columns: 1.15fr 0.85fr; } }
-        
-        .panel { 
-            background: var(--bg-card); border-radius: 12px; padding: 25px; 
-            border: 3px solid var(--border-color); box-shadow: var(--block-shadow);
-        }
-
-        /* PAINEL DE METRICAS ATUALIZADO */
+        .panel { background: var(--bg-card); border-radius: 12px; padding: 30px; border: 3px solid var(--border-color); box-shadow: var(--block-shadow); }
         .db-stats-box {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-            background: var(--card-inline-bg); padding: 15px;
-            border-radius: 8px; margin-bottom: 25px; border: 2px solid var(--border-color);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+            background: var(--card-inline-bg); padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 3px solid var(--border-color);
         }
-
         .stat-item { text-align: center; }
-        .stat-val { font-size: 24px; font-weight: 900; color: var(--text-dark); }
-        .stat-lbl { font-size: 10px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
-
-        .team-title { font-size: 24px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; }
-        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; max-height: 480px; overflow-y: auto; margin-top: 15px; }
-
+        .stat-val { font-size: 26px; font-weight: 900; color: var(--text-dark); }
+        .stat-lbl { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.5px; }
+        .team-title { font-size: 24px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; }
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto; margin-top: 20px; padding-right: 5px; }
         .player-card {
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 12px; background: var(--bg-card); border: 2px solid var(--border-color);
-            border-radius: 6px; cursor: pointer; transition: 0.1s; color: var(--text-dark);
-            box-shadow: 3px 3px 0px var(--border-color);
+            display: flex; flex-direction: column; justify-content: space-between; padding: 14px;
+            background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; cursor: pointer; color: var(--text-dark); box-shadow: 4px 4px 0px var(--border-color);
         }
-        .player-card:hover:not(.disabled-card) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); }
-        .player-card.selected-card { background: rgba(217, 119, 6, 0.15); border-color: var(--pt-gold); box-shadow: 3px 3px 0px var(--pt-gold); }
-        .player-card.disabled-card { opacity: 0.25; cursor: not-allowed; box-shadow: none; transform: none; }
-        
+        .player-card:hover:not(.disabled-card) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0px var(--border-color); }
+        .player-card.selected-card { background: rgba(217, 119, 6, 0.15); border-color: var(--pt-gold); box-shadow: 4px 4px 0px var(--pt-gold); }
+        .player-card.disabled-card { opacity: 0.2; cursor: not-allowed; box-shadow: none; transform: none; }
         .card-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; align-items: center; }
-        .card-pos { padding: 2px 6px; border-radius: 4px; color: #fff; border: 1px solid var(--border-color); }
+        .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; border: 2px solid var(--border-color); }
         .card-ovr { font-size: 16px; font-weight: 900; }
-
-        .stadium-wrapper { background: #020617; padding: 10px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 4px 4px 0px var(--border-color); }
-        .ad-boards { display: flex; justify-content: space-between; padding: 5px 12px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 8px; }
-
-        .football-pitch {
-            background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.02) 50%, transparent 50%);
-            background-size: 100% 40px; border: 3px solid var(--pitch-lines); height: 530px;
-            position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; box-sizing: border-box;
-            border-radius: 6px;
-        }
+        .stadium-wrapper { background: #020617; padding: 12px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 5px 5px 0px var(--border-color); }
+        .ad-boards { display: flex; justify-content: space-between; padding: 6px 14px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 12px; }
+        .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.02) 50%, transparent 50%); background-size: 100% 40px; border: 3px solid var(--pitch-lines); height: 540px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 0; box-sizing: border-box; border-radius: 6px; }
         .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: var(--pitch-lines); transform: translateY(-50%); }
         .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; border: 3px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
-        .pitch-line-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; }
-
-        .pitch-player-node {
-            width: 66px; height: 66px; background: #0f172a; border: 2px solid #f8fafc; border-radius: 50%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 2px; box-sizing: border-box; color: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: 0.15s;
-        }
+        .pitch-line-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; min-height: 66px; }
+        .pitch-player-node { width: 66px; height: 66px; background: #0f172a; border: 2px solid #f8fafc; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2px; box-sizing: border-box; color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         .pitch-player-node .node-pos { font-size: 9px; font-weight: 900; margin-bottom: 1px; color: #fff; padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.2); }
         .pitch-player-node .node-name { font-size: 9px; font-weight: 700; max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pitch-player-node .node-ovr { font-size: 12px; font-weight: 900; }
-        .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.5) !important; border: 3px dashed #eab308; transform: scale(1.15); cursor: pointer; }
+        .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.65) !important; border: 3px dashed #eab308; transform: scale(1.15); cursor: pointer; animation: pulse 1s infinite alternate; }
         .pitch-player-node.node-filled { background: #1c1917; border: 2px solid var(--pt-green); }
-
-        .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 10px; display: block; }
-        
-        /* CORREÇÃO DO SELETOR GRID: BORDAS RETOMADAS COM PROPRIEDADE DE BLOQUEIO */
-        .selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .selector-card { 
-            background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; 
-            padding: 12px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; 
-            color: var(--text-dark); box-shadow: 2px 2px 0px var(--border-color); transition: 0.1s;
-        }
-        .selector-card:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0px var(--border-color); }
-        .selector-card.active-card { border-color: var(--pt-green); background: rgba(16, 185, 129, 0.15); box-shadow: 2px 2px 0px var(--pt-green); font-weight: 900; }
-
-        .btn { padding: 16px 24px; font-size: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; border: 3px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; transition: 0.1s; box-shadow: 3px 3px 0px var(--border-color); }
+        .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 14px; display: block; }
+        .selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; }
+        .selector-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; padding: 14px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-dark); box-shadow: 3px 3px 0px var(--border-color); }
+        .selector-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); }
+        .selector-card.active-card { border-color: var(--pt-green); background: rgba(16, 185, 129, 0.15); box-shadow: 3px 3px 0px var(--pt-green); font-weight: 900; }
+        .btn { padding: 18px 28px; font-size: 16px; border-radius: 8px; font-weight: 900; cursor: pointer; border: 3px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; transition: 0.1s; box-shadow: 4px 4px 0px var(--border-color); }
         .btn:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 2px 2px 0px var(--border-color); }
         .btn-green { background: var(--pt-green); color: #fff; }
         .btn-red { background: var(--pt-red); color: #fff; }
         .btn-gold-action { background: var(--pt-gold); color: #fff; }
         .btn-large { width: 100%; display: block; }
         .btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform: none; }
-
-        .projection-card { background: var(--card-inline-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center; }
-        .odds-bar-container { margin: 12px 0; text-align: left; }
-        .odds-label { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .odds-bar-bg { background: var(--bg-main); height: 10px; border-radius: 5px; width: 100%; overflow: hidden; border: 1px solid var(--border-color); }
+        .projection-card { background: var(--card-inline-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 25px; margin-top: 20px; text-align: center; }
+        .odds-bar-container { margin: 16px 0; text-align: left; }
+        .odds-label { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .odds-bar-bg { background: var(--bg-main); height: 12px; border-radius: 6px; width: 100%; overflow: hidden; border: 2px solid var(--border-color); }
         .odds-bar-fill { background: var(--pt-green); height: 100%; width: 0%; transition: width 1.2s cubic-bezier(0.1, 1, 0.1, 1); }
-
-        .match-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 3px 3px 0px var(--border-color); }
-        .match-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; margin-bottom: 6px; text-transform: uppercase; }
+        .match-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 4px 4px 0px var(--border-color); }
+        .match-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 8px; text-transform: uppercase; }
         .match-scorers { font-size: 12px; color: var(--text-muted); font-style: italic; }
-
-        .league-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; color: inherit; }
-        .league-table th { background: var(--border-color); padding: 10px 8px; font-weight: 700; color: var(--bg-card); }
-        .league-table td { padding: 9px 8px; border-bottom: 1px solid var(--border-color); }
+        .league-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; text-align: left; color: inherit; }
+        .league-table th { background: var(--border-color); padding: 12px 10px; font-weight: 700; color: var(--bg-card); }
+        .league-table td { padding: 11px 10px; border-bottom: 2px solid var(--border-color); }
         .league-table tr.user-team-row { background: rgba(16, 185, 129, 0.2); font-weight: 700; }
-
-        /* RODAPÉ ESTILO RETRO REMODELADO */
-        .footer-credits { 
-            margin-top: 60px; padding: 25px 0; width: 100%; text-align: center; 
-            font-size: 12px; color: var(--text-muted); border-top: 2px solid var(--border-color); 
-        }
-        .footer-links { margin-top: 15px; display: flex; justify-content: center; gap: 15px; }
-        .footer-links a { 
-            color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px;
-            background: var(--bg-card); padding: 10px 18px; border-radius: 6px; 
-            border: 2px solid var(--border-color); box-shadow: 2px 2px 0px var(--border-color); transition: 0.1s;
-        }
-        .footer-links a:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0px var(--border-color); color: var(--pt-gold); border-color: var(--border-color); }
+        .footer-credits { margin-top: 70px; padding: 30px 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 3px solid var(--border-color); }
+        .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
+        .footer-links a { color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px; background: var(--bg-card); padding: 12px 22px; border-radius: 6px; border: 2px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); }
+        .footer-links a:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); color: var(--pt-gold); }
+        @keyframes pulse { from { box-shadow: 0 0 4px #eab308; } to { box-shadow: 0 0 16px #eab308; } }
     </style>
 </head>
 <body>
 
     <button class="theme-toggle-btn" onclick="toggleInterfaceTheme()">☀️ / 🌙</button>
 
-    <!-- MENU PRINCIPAL COM CAIXAS DE SELEÇÃO RECUPERADAS -->
     <div id="main-menu">
         <h1>4a0 • LIGA PORTUGUESA</h1>
         <div class="menu-subtitle">Modo Época Perfeita: Conquista os 102 pontos na Liga Portugal (34 vitórias) e garante de forma invicta todas as Taças nacionais e europeias.</div>
@@ -206,16 +136,10 @@
             <div class="selector-grid" id="group-formations">
                 <div class="selector-card active-card" onclick="setForm('4-3-3', this)">4-3-3</div>
                 <div class="selector-card" onclick="setForm('4-4-2', this)">4-4-2</div>
-                <div class="selector-card" onclick="setForm('3-5-2', this)">3-5-2</div>
-                <div class="selector-card" onclick="setForm('4-2-3-1', this)">4-2-3-1</div>
-                <div class="selector-card" onclick="setForm('4-5-1', this)">4-5-1</div>
-                <div class="selector-card" onclick="setForm('3-4-3', this)">3-4-3</div>
                 <div class="selector-card" onclick="setForm('5-3-2', this)">5-3-2</div>
+                <div class="selector-card" onclick="setForm('3-5-2', this)">3-5-2</div>
                 <div class="selector-card" onclick="setForm('5-4-1', this)">5-4-1</div>
-                <div class="selector-card" onclick="setForm('4-1-2-1-2', this)">4-1-2-1-2</div>
-                <div class="selector-card" onclick="setForm('3-4-1-2', this)">3-4-1-2</div>
-                <div class="selector-card" onclick="setForm('4-3-1-2', this)">4-3-1-2</div>
-                <div class="selector-card" onclick="setForm('5-2-3', this)">5-2-3</div>
+                <div class="selector-card" onclick="setForm('3-4-3', this)">3-4-3</div>
             </div>
         </div>
 
@@ -232,66 +156,34 @@
         <button class="btn btn-gold-action btn-large" onclick="startDraftSession()">START DRAFT</button>
     </div>
 
-    <!-- PAINEL PRINCIPAL DO JOGO -->
     <div id="game-container">
         <div class="panel">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--border-color); padding-bottom: 12px;">
                 <span id="round-title" style="font-weight: 900; text-transform: uppercase;">Ronda 1 de 11</span>
                 <span id="reroll-counter" style="font-size:12px; font-weight:900; color:var(--pt-red); display:none;">Baralhamentos: 3</span>
             </div>
-
             <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
                 <button id="btn-trigger-draw" class="btn btn-green btn-large" onclick="drawNextTeamSquad()">Sortear Equipa</button>
                 <button id="btn-trigger-reroll" class="btn btn-red btn-large" style="display:none;" onclick="executeReroll()">Baralhar Opções</button>
             </div>
-
-            <div id="draw-squad-zone" style="display: none;">
-                <div id="display-team-name" class="team-title">Equipa</div>
-                <div id="display-players-grid" class="players-grid"></div>
-            </div>
-            
-            <div id="projection-zone" class="projection-card" style="display: none;">
+            <div id="draw-squad-zone" style="display: none;"><div id="display-team-name" class="team-title">Equipa</div><div id="display-players-grid" class="players-grid"></div></div>
+            <div id="projection-zone" class="projection-card">
                 <h3 style="margin-bottom:10px;">Previsão da Época (Casas de Apostas)</h3>
                 <div style="font-size:36px; font-weight:900; color:var(--pt-green); margin:10px 0;" id="proj-place">1º Lugar</div>
                 <div style="font-size:13px; font-weight:800; margin-bottom:15px;">Pontos Esperados: <span id="proj-points" style="color:var(--pt-gold)">85</span> pts</div>
-                
-                <div class="odds-bar-container">
-                    <div class="odds-label"><span>Campanha de 102 Pts Perfeitos</span><span id="txt-odd-1">0%</span></div>
-                    <div class="odds-bar-bg"><div id="bar-odd-1" class="odds-bar-fill"></div></div>
-                </div>
-                <div class="odds-bar-container">
-                    <div class="odds-label"><span>Vencer a Taça de Portugal</span><span id="txt-odd-2">0%</span></div>
-                    <div class="odds-bar-bg"><div id="bar-odd-2" class="odds-bar-fill" style="background:#2563eb;"></div></div>
-                </div>
-                <div class="odds-bar-container">
-                    <div class="odds-label"><span>Vencer a Taça da Liga</span><span id="txt-odd-3">0%</span></div>
-                    <div class="odds-bar-bg"><div id="bar-odd-3" class="odds-bar-fill" style="background:#a855f7;"></div></div>
-                </div>
-                <div class="odds-bar-container">
-                    <div class="odds-label"><span>Vencer a UEFA Champions League</span><span id="txt-odd-4">0%</span></div>
-                    <div class="odds-bar-bg"><div id="bar-odd-4" class="odds-bar-fill" style="background:#d97706;"></div></div>
-                </div>
+                <div class="odds-bar-container"><div class="odds-label"><span>Campanha de 102 Pts Perfeitos</span><span id="txt-odd-1">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-1" class="odds-bar-fill"></div></div></div>
+                <div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça de Portugal</span><span id="txt-odd-2">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-2" class="odds-bar-fill" style="background:#2563eb;"></div></div></div>
+                <div class="odds-bar-container"><div class="odds-label"><span>Vencer a Taça da Liga</span><span id="txt-odd-3">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-3" class="odds-bar-fill" style="background:#a855f7;"></div></div></div>
+                <div class="odds-bar-container"><div class="odds-label"><span>Vencer a UEFA Champions League</span><span id="txt-odd-4">0%</span></div><div class="odds-bar-bg"><div id="bar-odd-4" class="odds-bar-fill" style="background:#d97706;"></div></div></div>
             </div>
         </div>
-
         <div class="panel">
-            <div class="stadium-wrapper">
-                <div class="ad-boards"><span>★ 4A0PT.COM</span><span>LIGA PORTUGUESA SIMULADOR</span><span>TAÇA DE PORTUGAL ★</span></div>
-                <div class="football-pitch" id="live-pitch"></div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-top:15px; text-align:center; font-size:12px; font-weight:900;">
-                <div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">DEF: <span id="ovr-def" style="color:#2563eb;">0</span></div>
-                <div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">MED: <span id="ovr-med" style="color:#059669;">0</span></div>
-                <div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">ATA: <span id="ovr-ata" style="color:#dc2626;">0</span></div>
-                <div style="background:var(--border-color); color:var(--bg-card); padding:10px; border-radius:6px;">GER: <span id="ovr-tot">0</span></div>
-            </div>
-
+            <div class="stadium-wrapper"><div class="ad-boards"><span>★ 4A0PT.COM</span><span>LIGA PORTUGUESA SIMULADOR</span><span>TAÇA DE PORTUGAL ★</span></div><div class="football-pitch" id="live-pitch"></div></div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-top:20px; text-align:center; font-size:12px; font-weight:900;"><div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">DEF: <span id="ovr-def" style="color:#2563eb;">0</span></div><div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">MED: <span id="ovr-med" style="color:#059669;">0</span></div><div style="background:var(--card-inline-bg); padding:10px; border:2px solid var(--border-color); border-radius:6px;">ATA: <span id="ovr-ata" style="color:#dc2626;">0</span></div><div style="background:var(--border-color); color:var(--bg-card); padding:10px; border-radius:6px;">GER: <span id="ovr-tot">0</span></div></div>
             <button id="btn-simulate-season" class="btn btn-green btn-large" style="margin-top:20px; display:none;" onclick="runSeasonSimulation()">Simular Temporada</button>
         </div>
     </div>
 
-    <!-- TELA DE SIMULAÇÃO DETALHADA -->
     <div id="simulation-screen">
         <h2 id="sim-title" style="font-size:28px;">Resumo Geral da Temporada</h2>
         <div id="simulation-matches-timeline"></div>
@@ -306,8 +198,8 @@
         </div>
     </div>
 
-    <!-- SISTEMA LÓGICO INTEGRADO E CORRIGIDO -->
     <script>
+        // Correção de inicialização do gancho dinâmico de contagem global
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof database !== 'undefined' && database.length > 0) {
                 document.getElementById("st-reg").innerText = database.length;
@@ -318,23 +210,16 @@
             }
         });
 
-        function toggleInterfaceTheme() {
-            document.body.classList.toggle("dark-theme");
-        }
+        function toggleInterfaceTheme() { document.body.classList.toggle("dark-theme"); }
 
+        // Mapeamento otimizado das 6 formações permitidas
         const tacticPitchRows = {
             "4-3-3": { A: ["EXE", "PL", "EXD"], M: ["MC", "MC", "MC"], D: ["DE", "DC", "DC", "DD"] },
             "4-4-2": { A: ["PL", "PL"], M: ["ME", "MC", "MC", "MD"], D: ["DE", "DC", "DC", "DD"] },
-            "3-5-2": { A: ["PL", "PL"], M: ["ME", "MC", "MDC", "MC", "MD"], D: ["DC", "DC", "DC"] },
-            "4-2-3-1": { A: ["EXE", "PL", "EXD"], M: ["MDC", "MCO", "MDC"], D: ["DE", "DC", "DC", "DD"] },
-            "4-5-1": { A: ["PL"], M: ["ME", "MC", "MCO", "MC", "MD"], D: ["DE", "DC", "DC", "DD"] },
-            "3-4-3": { A: ["EXE", "PL", "EXD"], M: ["ME", "MC", "MC", "MD"], D: ["DC", "DC", "DC"] },
             "5-3-2": { A: ["PL", "PL"], M: ["MC", "MC", "MC"], D: ["DE", "DC", "DC", "DC", "DD"] },
+            "3-5-2": { A: ["PL", "PL"], M: ["ME", "MC", "MDC", "MC", "MD"], D: ["DC", "DC", "DC"] },
             "5-4-1": { A: ["PL"], M: ["ME", "MC", "MC", "MD"], D: ["DE", "DC", "DC", "DC", "DD"] },
-            "4-1-2-1-2": { A: ["PL", "PL"], M: ["ME", "MCO", "MDC", "MD"], D: ["DE", "DC", "DC", "DD"] },
-            "3-4-1-2": { A: ["PL", "PL"], M: ["ME", "MC", "MCO", "MC", "MD"], D: ["DC", "DC", "DC"] },
-            "4-3-1-2": { A: ["PL", "PL"], M: ["MC", "MCO", "MDC", "MC"], D: ["DE", "DC", "DC", "DD"] },
-            "5-2-3": { A: ["EXE", "PL", "EXD"], M: ["MC", "MC"], D: ["DE", "DC", "DC", "DC", "DD"] }
+            "3-4-3": { A: ["EXE", "PL", "EXD"], M: ["ME", "MC", "MC", "MD"], D: ["DC", "DC", "DC"] }
         };
 
         const roleCompatibility = {
@@ -344,12 +229,13 @@
             "EXD": ["EXD", "MD"], "EXE": ["EXE", "ME"], "PL": ["PL"]
         };
 
+        const colorMap = { "GR": "var(--color-gr)", "DD": "var(--color-def)", "DE": "var(--color-def)", "DC": "var(--color-def)", "MC": "var(--color-med)", "MDC": "var(--color-med)", "MCO": "var(--color-med)", "MD": "var(--color-med)", "ME": "var(--color-med)", "EXD": "var(--color-ata)", "EXE": "var(--color-ata)", "PL": "var(--color-ata)" };
+
         function setForm(f, element) {
             document.querySelectorAll("#group-formations .selector-card").forEach(c => c.classList.remove("active-card"));
             element.classList.add("active-card"); selectedFormation = f;
         }
 
-        /* CORREÇÃO ESTRETA DO COMPORTAMENTO DO SELETOR DE DIFICULDADE */
         function setDiff(d, element) {
             document.querySelectorAll("#group-difficulties .selector-card").forEach(c => c.classList.remove("active-card"));
             element.classList.add("active-card"); selectedDifficulty = d;
@@ -357,25 +243,20 @@
         }
 
         function startDraftSession() {
-            if (typeof database === 'undefined' || database.length === 0) { return; }
+            if (typeof database === 'undefined' || database.length === 0) { alert("Erro de ficheiro de dados ausente."); return; }
             const rowsSetup = tacticPitchRows[selectedFormation]; currentPitchFormation = [];
-            
             currentPitchFormation.push({ id: "GR-G-0", sector: "G", role: "GR", name: null, ovr: null });
             ["D", "M", "A"].forEach(key => {
                 rowsSetup[key].forEach((pos, idx) => {
                     currentPitchFormation.push({ id: `${pos}-${key}-${idx}`, sector: key, role: pos, name: null, ovr: null });
                 });
             });
-
             lockedNamesRegistry = []; sessionTeamsHistory = []; activeRoundCount = 0; playerAwaitingPlacement = null;
             remainingRerolls = (selectedDifficulty === "easy") ? 3 : 0;
-            
             const uiReroll = document.getElementById("reroll-counter");
             if (remainingRerolls > 0) { uiReroll.innerText = `Baralhamentos: ${remainingRerolls}`; uiReroll.style.display = "inline"; }
             else { uiReroll.style.display = "none"; }
-
-            document.getElementById("main-menu").style.display = "none";
-            document.getElementById("game-container").style.display = "grid";
+            document.getElementById("main-menu").style.display = "none"; document.getElementById("game-container").style.display = "grid";
             buildVisualPitch(); updateRoundLabels(); calculateTeamOveralls();
         }
 
@@ -400,30 +281,25 @@
 
         function drawNextTeamSquad() {
             playerAwaitingPlacement = null; clearPitchNodeHighlights();
-            let pool = database.filter(e => e.isChampionsOnly !== true && e.isChampionsOnly !== "true");
+            let pool = database.filter(e => !e.isChampionsOnly);
             if (selectedDifficulty !== "easy") pool = pool.filter(e => !e.id.includes("alltime"));
             let available = pool.filter(e => !sessionTeamsHistory.includes(e.id));
             if (available.length === 0) { sessionTeamsHistory = []; available = pool; }
-
             const team = available[Math.floor(Math.random() * available.length)]; sessionTeamsHistory.push(team.id);
             document.getElementById("display-team-name").innerText = team.nomeEquipa;
-
             const grid = document.getElementById("display-players-grid"); grid.innerHTML = "";
             team.jogadores.forEach(p => {
                 const card = document.createElement("div"); card.className = "player-card";
                 const pName = p.nome || p.name; const isLocked = lockedNamesRegistry.includes(pName);
                 let compatibleSlot = false;
-                
                 p.posicoes.forEach(pos => {
                     currentPitchFormation.forEach(node => {
                         let allowed = roleCompatibility[node.role] || [node.role];
                         if (allowed.includes(pos) && !node.name) compatibleSlot = true;
                     });
                 });
-
                 if (isLocked || !compatibleSlot) card.classList.add("disabled-card");
                 else card.onclick = () => bindSelectedPlayerCard(p, card);
-
                 const color = colorMap[p.posicoes[0]] || "#334155";
                 card.innerHTML = `<div class="card-top"><span class="card-pos" style="background:${color}">${p.posicoes.join("/")}</span><span class="card-ovr">${selectedDifficulty === "hard" ? "?" : p.ovr}</span></div><div style="font-weight:900; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${pName}</div>`;
                 grid.appendChild(card);
@@ -459,15 +335,8 @@
             lockedNamesRegistry.push(pName); activeRoundCount++; playerAwaitingPlacement = null;
             document.getElementById("draw-squad-zone").style.display = "none"; document.getElementById("btn-trigger-reroll").style.display = "none";
             buildVisualPitch(); calculateTeamOveralls();
-            
-            if (activeRoundCount < 11) { 
-                updateRoundLabels(); document.getElementById("btn-trigger-draw").style.display = "block"; 
-            } else { 
-                document.getElementById("round-title").innerText = "Draft Completo!"; 
-                document.getElementById("btn-trigger-draw").style.display = "none"; 
-                document.getElementById("btn-simulate-season").style.display = "block"; 
-                triggerPreSeasonOddsDisplay(); 
-            }
+            if (activeRoundCount < 11) { updateRoundLabels(); document.getElementById("btn-trigger-draw").style.display = "block"; }
+            else { document.getElementById("round-title").innerText = "Draft Completo!"; document.getElementById("btn-trigger-draw").style.display = "none"; document.getElementById("btn-simulate-season").style.display = "block"; triggerPreSeasonOddsDisplay(); }
         }
 
         function calculateTeamOveralls() {
@@ -485,7 +354,7 @@
 
         function evalCupStage(userStats, reqMed, reqSec) {
             if (userStats.ger >= reqMed && userStats.def >= reqSec && userStats.med >= reqSec && userStats.ata >= reqSec) {
-                return Math.random() > 0.02;
+                return Math.random() > 0.02; // Margem de segurança de Upset de 2% solicitada
             }
             return Math.random() < 0.16;
         }
@@ -494,7 +363,6 @@
             const scores = calculateTeamOveralls(); const localScorers = currentPitchFormation.filter(n => ["M", "A"].includes(n.sector) && n.name).map(n => n.name.split(" ")[0]);
             const clubTags = ["por_", "slb_", "scp_", "bel_", "boa_", "scb_", "vsc_", "cfb_", "sal_", "far_", "cam_", "bei_", "lei_", "set_", "aca_", "pac_", "ave_"];
             let chosenLeagueClubs = [];
-
             clubTags.forEach(tag => {
                 let variants = database.filter(e => e.id.startsWith(tag) && !e.id.includes("alltime"));
                 if (variants.length > 0) {
@@ -502,7 +370,6 @@
                     chosenLeagueClubs.push(variants[0]);
                 }
             });
-
             const screen = document.getElementById("simulation-screen"); screen.style.display = "block";
             document.getElementById("game-container").style.display = "none";
             const timeline = document.getElementById("simulation-matches-timeline"); timeline.innerHTML = "";
@@ -538,11 +405,11 @@
             let tp2 = tp1 ? evalCupStage(scores, 82, 80) : false; if(tp1) appendDetailedMatchCard(timeline, "16 avos de Final", tableData[0], chosenLeagueClubs[4], tp2, false);
             let tp3 = tp2 ? evalCupStage(scores, 82, 80) : false; if(tp2) appendDetailedMatchCard(timeline, "8 avos de Final", tableData[0], chosenLeagueClubs[5], tp3, false);
             let tp4 = tp3 ? evalCupStage(scores, 82, 80) : false; if(tp3) appendDetailedMatchCard(timeline, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[6], tp4, false);
-            let tp5 = tp4 ? evalCupStage(scores, 82, 80) : false; if(tp4) { appendDetailedMatchCard(timeline, "Meia-Final - Ida (1ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(timeline, "Meia-Final - Volta (2ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); }
-            let tp6 = tp5 ? evalCupStage(scores, 82, 80) : false; if(tp5) appendDetailedMatchCard(timeline, "Grande Final (Estádio Nacional do Jamor)", tableData[0], chosenLeagueClubs[1], tp6, false);
+            let tp5 = tp4 ? evalCupStage(scores, 82, 80) : false; if(tp4) { appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Ida (1ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(timeline, "Meia-Final - Jogo de Volta (2ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); }
+            let tp6 = tp5 ? evalCupStage(scores, 82, 80) : false; if(tp5) appendDetailedMatchCard(timeline, "Grande Final (Jamor)", tableData[0], chosenLeagueClubs[1], tp6, false);
 
             const secUCL = document.createElement("div"); secUCL.className = "timeline-section-title"; secUCL.innerText = "UEFA Champions League - Fase de Liga"; timeline.appendChild(secUCL);
-            const giants = database.filter(e => e.isChampionsOnly === true || e.isChampionsOnly === "true");
+            const giants = database.filter(e => e.isChampionsOnly);
             for (let m = 1; m <= 8; m++) {
                 let opp = giants[(m-1)%giants.length]; let winM = evalCupStage(scores, 88, 84);
                 const mCard = document.createElement("div"); mCard.className = "match-card"; mCard.innerHTML = `<div class="match-header"><span>Jogo ${m} (${m<=4?'Casa':'Fora'})</span><span style="color:var(--pt-green)">${winM?'VITÓRIA':'EMPATE'} vs ${opp.nomeEquipa}</span></div>`; timeline.appendChild(mCard);
