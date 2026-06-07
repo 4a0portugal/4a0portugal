@@ -944,9 +944,9 @@ const database = [
     "nomeEquipa": "Belenenses 1946",
     "jogadores": [
       { "nome": "José Capela", "posicoes": ["GR"], "ovr": 82 },
-      { "nome": "Feliciano", "posicoes": ["DC"], "ovr": 81 },
-      { "nome": "Serafim Neves", "posicoes": ["DC"], "ovr": 78 },
-      { "nome": "Vasco", "posicoes": ["DD"], "ovr": 76 },
+      { "nome": "Feliciano", "posicoes": ["DC", "DD", "DE"], "ovr": 81 },
+      { "nome": "Serafim Neves", "posicoes": ["DC", "DD", "DE"], "ovr": 78 },
+      { "nome": "Vasco", "posicoes": ["DD", "DE"], "ovr": 76 },
       { "nome": "Mariano Amaro", "posicoes": ["MC"], "ovr": 84 },
       { "nome": "Feliciano Loureiro", "posicoes": ["MC"], "ovr": 78 },
       { "nome": "Gomes", "posicoes": ["MC"], "ovr": 74 },
