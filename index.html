@@ -57,7 +57,7 @@
         .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; border: 2px solid var(--border-color); }
         .card-ovr { font-size: 16px; font-weight: 900; }
         .stadium-wrapper { background: #020617; padding: 14px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 5px 5px 0px var(--border-color); }
-        .ad-boards { display: flex; justify-content: space-between; padding: 6px 14px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 16px; }
+        .ad-boards { display: flex; justify-content: space-between; padding: 8px 16px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 16px; }
         .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.02) 50%, transparent 50%); background-size: 100% 40px; border: 3px solid var(--pitch-lines); height: 540px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 0; box-sizing: border-box; border-radius: 6px; }
         .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: var(--pitch-lines); transform: translateY(-50%); }
         .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; border: 3px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
@@ -69,11 +69,9 @@
         .pitch-player-node.node-active { background: rgba(234, 179, 8, 0.65) !important; border: 3px dashed #eab308; transform: scale(1.15); cursor: pointer; animation: pulse 1s infinite alternate; }
         .pitch-player-node.node-filled { background: #1c1917; border: 2px solid var(--pt-green); }
         .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 16px; display: block; }
-        
         .menu-subtitle { margin-bottom: 40px; line-height: 1.7; font-size: 14px; padding-bottom: 10px; }
         .difficulty-desc { margin-top: 15px; margin-bottom: 40px; font-weight: 700; font-size: 13px; text-align: center; color: var(--text-muted); }
         .selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 40px; }
-        
         .selector-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; padding: 16px 5px; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; color: var(--text-dark); box-shadow: 3px 3px 0px var(--border-color); }
         .selector-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); }
         .selector-card.active-card { border-color: var(--pt-green); background: rgba(16, 185, 129, 0.15); box-shadow: 3px 3px 0px var(--pt-green); font-weight: 900; }
@@ -84,13 +82,11 @@
         .btn-gold-action { background: var(--pt-gold); color: #fff; margin-top: 15px; }
         .btn-large { width: 100%; display: block; }
         .btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform: none; }
-        
         .projection-card { background: var(--card-inline-bg); border: 3px solid var(--border-color); border-radius: 8px; padding: 30px; margin-top: 25px; text-align: center; display: none; box-shadow: var(--block-shadow); }
         .odds-bar-container { margin: 18px 0; text-align: left; }
         .odds-label { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 8px; }
         .odds-bar-bg { background: var(--bg-main); height: 14px; border-radius: 7px; width: 100%; overflow: hidden; border: 2px solid var(--border-color); }
         .odds-bar-fill { background: var(--pt-green); height: 100%; width: 0%; transition: width 1.2s cubic-bezier(0.1, 1, 0.1, 1); }
-        
         .match-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 8px; padding: 22px; margin-bottom: 20px; box-shadow: 4px 4px 0px var(--border-color); }
         .match-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; text-transform: uppercase; }
         .match-scorers { font-size: 12px; color: var(--text-muted); font-style: italic; }
@@ -98,7 +94,6 @@
         .league-table th { background: var(--border-color); padding: 14px 12px; font-weight: 700; color: var(--bg-card); }
         .league-table td { padding: 12px 12px; border-bottom: 2px solid var(--border-color); }
         .league-table tr.user-team-row { background: rgba(16, 185, 129, 0.2); font-weight: 700; }
-        
         .comp-block-container { background: var(--card-inline-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 30px; margin-bottom: 45px; box-shadow: var(--block-shadow); }
         .footer-credits { margin-top: 80px; padding: 35px 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 3px solid var(--border-color); }
         .footer-links { margin-top: 25px; display: flex; justify-content: center; gap: 24px; }
@@ -269,9 +264,15 @@
             });
         }
 
+        /* FILTRAGEM RIGIDA BASEADA NAS STRINGS DE EQUIPAS ADVERSARIAS PERMITIDAS NO POOL */
         function drawNextTeamSquad() {
             playerAwaitingPlacement = null; clearPitchNodeHighlights();
-            let pool = database.filter(e => e.isChampionsOnly !== true && e.isChampionsOnly !== "true");
+            const nationalTags = ["por_", "slb_", "scp_", "bel_", "boa_", "scb_", "vsc_", "cfb_", "sal_", "far_", "cam_", "bei_", "lei_", "set_", "aca_", "pac_", "ave_"];
+            let pool = database.filter(e => {
+                const hasValidTag = nationalTags.some(tag => e.id.startsWith(tag));
+                const isUcl = e.isChampionsOnly === true || e.isChampionsOnly === "true";
+                return hasValidTag && !isUcl;
+            });
             if (selectedDifficulty !== "easy") pool = pool.filter(e => !e.id.includes("alltime"));
             let available = pool.filter(e => !sessionTeamsHistory.includes(e.id));
             if (available.length === 0) { sessionTeamsHistory = []; available = pool; }
@@ -354,7 +355,6 @@
             const clubTags = ["por_", "slb_", "scp_", "bel_", "boa_", "scb_", "vsc_", "cfb_", "sal_", "far_", "cam_", "bei_", "lei_", "set_", "aca_", "pac_", "ave_"];
             let chosenLeagueClubs = [];
             
-            /* EXTRAÇÃO DAS MELHORES VERSÕES REAIS SOLICITADAS EXCLUINDO ALL-TIME COMPLETAMENTE */
             clubTags.forEach(tag => {
                 let pool = database.filter(e => e.id.startsWith(tag) && !e.id.includes("alltime"));
                 if (pool.length > 0) {
@@ -474,7 +474,6 @@
             return `Golos Casa: ${logA.length ? logA.join(", ") : 'Nenhum'} | Golos Fora: ${logB.length ? logB.join(", ") : 'Nenhum'}`;
         }
 
-        /* SISTEMA ROBUSTO E COMPLETO DE SOMA REAL DE AGREGADOS (PONTO 1 DO FEEDBACK) */
         function appendTwoLeggedTie(container, stageName, userTeam, opponent, isUserWin) {
             let gA1 = isUserWin ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2);
             let gB1 = isUserWin ? Math.floor(Math.random() * gA1) : Math.floor(Math.random() * 2) + 1;
