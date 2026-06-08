@@ -7,34 +7,14 @@
     <script src="dados.js"></script>
     <style>
         :root {
-            --bg-main: #f4f1ea;
-            --bg-card: #ffffff;
-            --text-dark: #1c1917;
-            --text-muted: #57534e;
-            --border-color: #1c1917;
-            --pitch-green: #15803d;
-            --pitch-lines: rgba(255, 255, 255, 0.5);
-            --pt-green: #10b981;
-            --pt-red: #f43f5e;
-            --pt-gold: #d97706;
-            --pt-amber: #f59e0b;
-            --color-gr: #f97316;
-            --color-def: #2563eb;
-            --color-med: #059669;
-            --color-ata: #dc2626;
-            --card-inline-bg: #efede6;
-            --block-shadow: 6px 6px 0px #1c1917;
+            --bg-main: #f4f1ea; --bg-card: #ffffff; --text-dark: #1c1917; --text-muted: #57534e; --border-color: #1c1917;
+            --pitch-green: #15803d; --pitch-lines: rgba(255, 255, 255, 0.5); --pt-green: #10b981; --pt-red: #f43f5e;
+            --pt-gold: #d97706; --pt-amber: #f59e0b; --color-gr: #f97316; --color-def: #2563eb; --color-med: #059669;
+            --color-ata: #dc2626; --card-inline-bg: #efede6; --block-shadow: 6px 6px 0px #1c1917;
         }
         body.dark-theme {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --text-dark: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #1e293b;
-            --pitch-green: #047857;
-            --pitch-lines: rgba(255, 255, 255, 0.35);
-            --pt-gold: #eab308;
-            --card-inline-bg: #0f172a;
+            --bg-main: #0f172a; --bg-card: #1e293b; --text-dark: #f8fafc; --text-muted: #94a3b8; --border-color: #1e293b;
+            --pitch-green: #047857; --pitch-lines: rgba(255, 255, 255, 0.35); --pt-gold: #eab308; --card-inline-bg: #0f172a;
             --block-shadow: 6px 6px 0px #090d16;
         }
         body {
@@ -57,7 +37,6 @@
         #game-container { display: none; width: 100%; max-width: 1320px; grid-template-columns: 1fr; gap: 35px; margin-top: 40px; }
         @media (min-width: 1024px) { #game-container { grid-template-columns: 1.15fr 0.85fr; } }
         .panel { background: var(--bg-card); border-radius: 12px; padding: 35px; border: 3px solid var(--border-color); box-shadow: var(--block-shadow); }
-        
         .db-stats-box {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
             background: var(--card-inline-bg); padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 3px solid var(--border-color);
@@ -65,10 +44,8 @@
         .stat-item { text-align: center; }
         .stat-val { font-size: 26px; font-weight: 900; color: var(--text-dark); }
         .stat-lbl { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 6px; }
-        
         .team-title { font-size: 24px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--border-color); padding-bottom: 12px; margin-bottom: 25px; }
         .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto; margin-top: 20px; padding-right: 5px; }
-        
         .player-card {
             display: flex; flex-direction: column; justify-content: space-between; padding: 14px;
             background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 6px; cursor: pointer; color: var(--text-dark); box-shadow: 4px 4px 0px var(--border-color);
@@ -76,18 +53,15 @@
         .player-card:hover:not(.disabled-card) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0px var(--border-color); }
         .player-card.selected-card { background: rgba(217, 119, 6, 0.15); border-color: var(--pt-gold); box-shadow: 4px 4px 0px var(--pt-gold); }
         .player-card.disabled-card { opacity: 0.18; cursor: not-allowed; box-shadow: none; transform: none; }
-        
         .card-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; align-items: center; }
         .card-pos { padding: 3px 7px; border-radius: 4px; color: #fff; border: 2px solid var(--border-color); }
         .card-ovr { font-size: 16px; font-weight: 900; }
-        
         .stadium-wrapper { background: #020617; padding: 14px; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 5px 5px 0px var(--border-color); }
         .ad-boards { display: flex; justify-content: space-between; padding: 6px 14px; background: #000; color: #facc15; font-size: 10px; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #1e293b; margin-bottom: 16px; }
         .football-pitch { background-color: var(--pitch-green); background-image: linear-gradient(rgba(255,255,255,0.02) 50%, transparent 50%); background-size: 100% 40px; border: 3px solid var(--pitch-lines); height: 540px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 0; box-sizing: border-box; border-radius: 6px; }
         .football-pitch::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: var(--pitch-lines); transform: translateY(-50%); }
         .pitch-center-circle { position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; border: 3px solid var(--pitch-lines); border-radius: 50%; transform: translate(-50%, -50%); }
         .pitch-line-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; min-height: 66px; }
-        
         .pitch-player-node { width: 66px; height: 66px; background: #0f172a; border: 2px solid #f8fafc; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2px; box-sizing: border-box; color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         .pitch-player-node .node-pos { font-size: 9px; font-weight: 900; margin-bottom: 1px; color: #fff; padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.2); }
         .pitch-player-node .node-name { font-size: 9px; font-weight: 700; max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -96,7 +70,6 @@
         .pitch-player-node.node-filled { background: #1c1917; border: 2px solid var(--pt-green); }
         .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 900; margin-bottom: 16px; display: block; }
         
-        /* ESPAÇAMENTOS GRANDES VINCADOS EXIGIDOS (PONTO 5) */
         .menu-subtitle { margin-bottom: 40px; line-height: 1.7; font-size: 14px; padding-bottom: 10px; }
         .difficulty-desc { margin-top: 15px; margin-bottom: 40px; font-weight: 700; font-size: 13px; text-align: center; color: var(--text-muted); }
         .selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 40px; }
@@ -129,7 +102,7 @@
         .comp-block-container { background: var(--card-inline-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 30px; margin-bottom: 45px; box-shadow: var(--block-shadow); }
         .footer-credits { margin-top: 80px; padding: 35px 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 3px solid var(--border-color); }
         .footer-links { margin-top: 25px; display: flex; justify-content: center; gap: 24px; }
-        .footer-links a { color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px; background: var(--bg-card); padding: 14px 24px; border-radius: 6px; border: 2px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); }
+        .footer-links a { color: var(--text-dark); text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 11px; background: var(--bg-card); padding: 14px 24px; border-radius: 6px; border: 2px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); transition: 0.1s; }
         .footer-links a:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--border-color); color: var(--pt-gold); }
         @keyframes pulse { from { box-shadow: 0 0 4px #eab308; } to { box-shadow: 0 0 16px #eab308; } }
     </style>
@@ -343,25 +316,17 @@
             });
         }
 
-        /* SEGURANÇA TOTAL CONTRA SUCESSIVOS TRAVAMENTOS (PONTO 1 DO FEEDBACK) */
         function confirmPlayerPlacement(targetNode) {
             try {
                 if (!playerAwaitingPlacement) return;
                 const pName = playerAwaitingPlacement.nome || playerAwaitingPlacement.name || "Jogador";
-                targetNode.name = pName; 
-                targetNode.ovr = parseInt(playerAwaitingPlacement.ovr, 10) || 80;
+                targetNode.name = pName; targetNode.ovr = parseInt(playerAwaitingPlacement.ovr, 10) || 80;
                 lockedNamesRegistry.push(pName); activeRoundCount++; playerAwaitingPlacement = null;
-                
-                document.getElementById("draw-squad-zone").style.display = "none"; 
-                document.getElementById("btn-trigger-reroll").style.display = "none";
-                
-                buildVisualPitch(); 
-                calculateTeamOveralls();
-                
+                document.getElementById("draw-squad-zone").style.display = "none"; document.getElementById("btn-trigger-reroll").style.display = "none";
+                buildVisualPitch(); calculateTeamOveralls();
                 if (activeRoundCount < 11) { updateRoundLabels(); document.getElementById("btn-trigger-draw").style.display = "block"; }
                 else { document.getElementById("round-title").innerText = "Draft Completo!"; document.getElementById("btn-trigger-draw").style.display = "none"; document.getElementById("btn-simulate-season").style.display = "block"; triggerPreSeasonOddsDisplay(); }
             } catch (err) {
-                console.error("Erro interno no posicionamento recuperado automaticamente:", err);
                 document.getElementById("btn-trigger-draw").style.display = "block";
             }
         }
@@ -389,11 +354,22 @@
             const clubTags = ["por_", "slb_", "scp_", "bel_", "boa_", "scb_", "vsc_", "cfb_", "sal_", "far_", "cam_", "bei_", "lei_", "set_", "aca_", "pac_", "ave_"];
             let chosenLeagueClubs = [];
             
+            /* EXTRAÇÃO DAS MELHORES VERSÕES REAIS SOLICITADAS EXCLUINDO ALL-TIME COMPLETAMENTE */
             clubTags.forEach(tag => {
-                let variants = database.filter(e => e.id.startsWith(tag));
-                if (variants.length > 0) {
-                    variants.sort((a,b) => b.jogadores.reduce((s,n)=>s+parseInt(n.ovr || 0, 10),0) - a.jogadores.reduce((s,n)=>s+parseInt(n.ovr || 0, 10),0));
-                    chosenLeagueClubs.push(variants[0]);
+                let pool = database.filter(e => e.id.startsWith(tag) && !e.id.includes("alltime"));
+                if (pool.length > 0) {
+                    let selected = pool[0];
+                    if (tag === "por_") {
+                        let m = pool.find(e => e.nomeEquipa.includes("2004") || e.id.includes("2004")); if (m) selected = m;
+                    } else if (tag === "slb_") {
+                        let m = pool.find(e => e.nomeEquipa.includes("1962") || e.id.includes("1962")); if (m) selected = m;
+                    } else if (tag === "scp_") {
+                        let m = pool.find(e => e.nomeEquipa.includes("2025") || e.id.includes("2025")); if (m) selected = m;
+                    } else {
+                        pool.sort((a,b) => b.jogadores.reduce((s,n)=>s+parseInt(n.ovr || 0, 10),0) - a.jogadores.reduce((s,n)=>s+parseInt(n.ovr || 0, 10),0));
+                        selected = pool[0];
+                    }
+                    chosenLeagueClubs.push(selected);
                 }
             });
 
@@ -431,20 +407,18 @@
             let tp2 = tp1 ? evalCupStage(scores, 84, 82) : false; if(tp1) appendDetailedMatchCard(blockTP, "16 avos de Final", tableData[0], chosenLeagueClubs[4], tp2, false);
             let tp3 = tp2 ? evalCupStage(scores, 84, 82) : false; if(tp2) appendDetailedMatchCard(blockTP, "8 avos de Final", tableData[0], chosenLeagueClubs[5], tp3, false);
             let tp4 = tp3 ? evalCupStage(scores, 84, 82) : false; if(tp3) appendDetailedMatchCard(blockTP, "Quartos de Final (Jogo Único)", tableData[0], chosenLeagueClubs[6], tp4, false);
-            let tp5 = tp4 ? evalCupStage(scores, 84, 82) : false; if(tp4) { appendDetailedMatchCard(blockTP, "Meia-Final - Jogo de Ida (1ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); appendDetailedMatchCard(blockTP, "Meia-Final - Jogo de Volta (2ª Mão)", tableData[0], chosenLeagueClubs[0], tp5, true); }
+            let tp5 = tp4 ? evalCupStage(scores, 84, 82) : false; if(tp4) { appendTwoLeggedTie(blockTP, "Meia-Final", tableData[0], chosenLeagueClubs[0], tp5); }
             let tp6 = tp5 ? evalCupStage(scores, 84, 82) : false; if(tp5) appendDetailedMatchCard(blockTP, "Grande Final (Jamor)", tableData[0], chosenLeagueClubs[1], tp6, false);
             timeline.appendChild(blockTP);
 
-            /* TABELA COMPLETA COM 36 GIGANTES EUROPEUS TOTALMENTE UNICOS (PONTOS 2, 7 E 8) */
             const blockUCL = document.createElement("div"); blockUCL.className = "comp-block-container"; blockUCL.innerHTML = "<h2>UEFA Champions League</h2>";
-            
             let uclPoolRaw = database.filter(e => e.isChampionsOnly === true || e.isChampionsOnly === "true");
             let uniqueUclClubs = []; let uniqueNamesSet = new Set();
             uclPoolRaw.forEach(c => {
                 let baseName = c.nomeEquipa.replace(/\s\d+$/, "").trim();
                 if(!uniqueNamesSet.has(baseName)) { uniqueNamesSet.add(baseName); uniqueUclClubs.push(c); }
             });
-            while(uniqueUclClubs.length < 35) { uniqueUclClubs.push({ nomeEquipa: "Poder Europeu Alternativo", jogadores: [{nome:"Falso",ovr:85}] }); }
+            while(uniqueUclClubs.length < 35) { uniqueUclClubs.push({ nomeEquipa: "Poder Europeu Sorteado", jogadores: [{nome:"Trunfo",ovr:85}] }); }
 
             let uclTable = [{ id: "user", name: "A Tua Equipa (Draft)", points: 0, gf: 0, ga: 0, isUser: true }];
             for(let k=0; k<35; k++) { uclTable.push({ id: `cpu_${k}`, name: uniqueUclClubs[k].nomeEquipa, points: 0, gf: 0, ga: 0, isUser: false }); }
@@ -465,19 +439,18 @@
             uclTable.sort((a,b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga));
             let userRank = uclTable.findIndex(t => t.isUser) + 1;
 
-            let rankCard = document.createElement("div"); rankCard.className = "match-card"; rankCard.style.textAlign = "center"; rankCard.innerHTML = `<h3>Fase de Liga Concluída</h3><p style="font-size:18px;">Terminaste em <b style="color:var(--pt-gold); font-size:24px;">${userRank}º Lugar</b> na Tabela Geral de 36 Equipas.</p>`; blockUCL.appendChild(rankCard);
+            let rankCard = document.createElement("div"); rankCard.className = "match-card"; rankCard.style.textAlign = "center"; rankCard.innerHTML = `<h3>Fase de Liga Concluída</h3><p style="font-size:18px;">Terminaste em <b style="color:var(--pt-gold); font-size:24px;">${userRank}º Lugar</b> na Tabela Geral de 36 Equipas Europeias.</p>`; blockUCL.appendChild(rankCard);
 
             if (userRank >= 25) {
                 let failCard = document.createElement("div"); failCard.className = "match-card"; failCard.style.borderLeft = "6px solid var(--pt-red)"; failCard.innerHTML = `<div class="match-header" style="color:var(--pt-red)">Eliminação Direta</div><p>Posição ${userRank}º está fora do Top 24. Foste eliminado da UEFA Champions League.</p>`;
                 blockUCL.appendChild(failCard); timeline.appendChild(blockUCL); return;
             }
 
-            /* BLOQUEIO COMPLETO DE JOGOS CONTRA SI PRÓPRIO (BUG DO ESPELHO RESOLVIDO) */
             let ch1 = userRank <= 8 ? true : evalCupStage(scores, 88, 86); 
-            if(userRank > 8) { appendDetailedMatchCard(blockUCL, "Playoffs de Acesso - 1ª Mão", tableData[0], uniqueUclClubs[18], ch1, true); appendDetailedMatchCard(blockUCL, "Playoffs de Acesso - 2ª Mão", tableData[0], uniqueUclClubs[18], ch1, true); }
-            let ch2 = ch1 ? evalCupStage(scores, 88, 86) : false; if(ch1) { appendDetailedMatchCard(blockUCL, "Oitavos de Final - 1ª Mão", tableData[0], uniqueUclClubs[19], ch2, true); appendDetailedMatchCard(blockUCL, "Oitavos de Final - 2ª Mão", tableData[0], uniqueUclClubs[19], ch2, true); }
-            let ch3 = ch2 ? evalCupStage(scores, 88, 86) : false; if(ch2) { appendDetailedMatchCard(blockUCL, "Quartos de Final - 1ª Mão", tableData[0], uniqueUclClubs[20], ch3, true); appendDetailedMatchCard(blockUCL, "Quartos de Final - 2ª Mão", tableData[0], uniqueUclClubs[20], ch3, true); }
-            let ch4 = ch3 ? evalCupStage(scores, 88, 86) : false; if(ch3) { appendDetailedMatchCard(blockUCL, "Meias-Finais - 1ª Mão", tableData[0], uniqueUclClubs[21], ch4, true); appendDetailedMatchCard(blockUCL, "Meias-Finais - 2ª Mão", tableData[0], uniqueUclClubs[21], ch4, true); }
+            if(userRank > 8) { appendTwoLeggedTie(blockUCL, "Playoffs de Acesso", tableData[0], uniqueUclClubs[18], ch1); }
+            let ch2 = ch1 ? evalCupStage(scores, 88, 86) : false; if(ch1) { appendTwoLeggedTie(blockUCL, "Oitavos de Final", tableData[0], uniqueUclClubs[19], ch2); }
+            let ch3 = ch2 ? evalCupStage(scores, 88, 86) : false; if(ch2) { appendTwoLeggedTie(blockUCL, "Quartos de Final", tableData[0], uniqueUclClubs[20], ch3); }
+            let ch4 = ch3 ? evalCupStage(scores, 88, 86) : false; if(ch3) { appendTwoLeggedTie(blockUCL, "Meias-Finais", tableData[0], uniqueUclClubs[21], ch4); }
             let ch5 = ch4 ? evalCupStage(scores, 88, 86) : false; if(ch4) appendDetailedMatchCard(blockUCL, "Grande Final Europeia (Jogo Único)", tableData[0], uniqueUclClubs[22], ch5, false);
             timeline.appendChild(blockUCL);
 
@@ -501,17 +474,42 @@
             return `Golos Casa: ${logA.length ? logA.join(", ") : 'Nenhum'} | Golos Fora: ${logB.length ? logB.join(", ") : 'Nenhum'}`;
         }
 
+        /* SISTEMA ROBUSTO E COMPLETO DE SOMA REAL DE AGREGADOS (PONTO 1 DO FEEDBACK) */
+        function appendTwoLeggedTie(container, stageName, userTeam, opponent, isUserWin) {
+            let gA1 = isUserWin ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2);
+            let gB1 = isUserWin ? Math.floor(Math.random() * gA1) : Math.floor(Math.random() * 2) + 1;
+            let gA2 = isUserWin ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2);
+            let gB2 = isUserWin ? Math.floor(Math.random() * gA2) : Math.floor(Math.random() * 2) + 1;
+
+            let totalUser = gA1 + gA2; let totalOpp = gB1 + gB2;
+            if (isUserWin && totalUser <= totalOpp) { gA2 += (totalOpp - totalUser) + 1; } 
+            else if (!isUserWin && totalUser >= totalOpp) { gB2 += (totalUser - totalOpp) + 1; }
+
+            let aggA = gA1 + gA2; let aggB = gB1 + gB2;
+            renderLegCard(container, stageName + " - 1ª Mão", gA1, gB1, opponent, aggA, aggB);
+            renderLegCard(container, stageName + " - 2ª Mão", gA2, gB2, opponent, aggA, aggB);
+        }
+
+        function renderLegCard(container, label, gA, gB, opponent, aggA, aggB) {
+            const card = document.createElement("div"); card.className = "match-card";
+            const oppPlayers = opponent.jogadores ? opponent.jogadores.map(n => n.nome) : ["Oponente"];
+            const userPlayers = currentPitchFormation.map(n => n.name ? n.name.split(" ")[0] : "Jogador");
+            let goalsLog = generateScorersBlock(gA > 0, gA, userPlayers, gB > 0, gB, oppPlayers);
+            let colorResult = gA > gB ? 'var(--pt-green)' : gA === gB ? 'var(--pt-amber)' : 'var(--pt-red)';
+            card.innerHTML = `<div class="match-header"><span>${label}</span><span style="color: ${colorResult}">${gA > gB ? 'VITÓRIA' : gA === gB ? 'EMPATE' : 'DERROTA'} ${gA} - ${gB} vs ${opponent.nomeEquipa || opponent.name || "Colosso"} <span style='font-size:11px; color:var(--text-muted);'>(Agregado: ${aggA}-${aggB})</span></span></div><div class="match-scorers">${goalsLog}</div>`;
+            container.appendChild(card);
+        }
+
         function appendDetailedMatchCard(container, stageName, userTeam, opponent, isUserWin, isTwoLegged) {
             const card = document.createElement("div"); card.className = "match-card";
             let goalsA = isUserWin ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 2);
             let goalsB = isUserWin ? Math.floor(Math.random() * goalsA) : Math.floor(Math.random() * 2) + 1;
             if (!isUserWin && goalsA === goalsB) goalsB++;
-            const oppPlayers = opponent.jogadores ? opponent.jogadores.map(n => n.nome) : ["Jogador Oponente"];
+            const oppPlayers = opponent.jogadores ? opponent.jogadores.map(n => n.nome) : ["Oponente"];
             const userPlayers = currentPitchFormation.map(n => n.name ? n.name.split(" ")[0] : "Jogador");
             let goalsLog = generateScorersBlock(true, goalsA, userPlayers, true, goalsB, oppPlayers);
-            let footerExtra = isTwoLegged ? ` <span style='font-size:11px; color:var(--text-muted);'>(Agregado: ${goalsA}-${goalsB})</span>` : "";
             let colorResult = goalsA > goalsB ? 'var(--pt-green)' : goalsA === goalsB ? 'var(--pt-amber)' : 'var(--pt-red)';
-            card.innerHTML = `<div class="match-header"><span>${stageName}</span><span style="color: ${colorResult}">${goalsA > goalsB ? 'VITÓRIA' : goalsA === goalsB ? 'EMPATE' : 'DERROTA'} ${goalsA} - ${goalsB} vs ${opponent.nomeEquipa || opponent.name || "Colosso Europeu"}${footerExtra}</span></div><div class="match-scorers">${goalsLog}</div>`;
+            card.innerHTML = `<div class="match-header"><span>${stageName}</span><span style="color: ${colorResult}">${goalsA > goalsB ? 'VITÓRIA' : goalsA === goalsB ? 'EMPATE' : 'DERROTA'} ${goalsA} - ${goalsB} vs ${opponent.nomeEquipa || opponent.name || "Colosso"}</span></div><div class="match-scorers">${goalsLog}</div>`;
             container.appendChild(card);
         }
 
